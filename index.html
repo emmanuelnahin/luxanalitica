@@ -3872,7 +3872,7 @@
                 ['Total de empleados', stats.totalEmployees],
                 ['Empleados con manager asignado', stats.withManager],
                 ['Porcentaje con manager', `${Math.round(stats.withManager / stats.totalEmployees * 100)}%`],
-                ['Cobertura 360° completa', `${coveragePercentage}%`],
+                ['Cobertura 360° completa según base', `${coveragePercentage}%`],
                 ['Empleados con cobertura completa', stats.coverageStats.fullyCovered],
                 ['Distribución por género (M/F)', `${stats.genderCount.M} / ${stats.genderCount.F}`],
                 ['Áreas diferentes', Object.keys(stats.areaDistribution).length],
@@ -4021,4 +4021,5 @@
         }
     </script>
 </body>
+
 </html>
