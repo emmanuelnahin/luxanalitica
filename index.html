@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> XLS Luxanalitica </title>
+    <title>XLS Luxanalitica</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1170,6 +1170,121 @@
             color: #1b5e20;
         }
         
+        /* NUEVOS ESTILOS PARA TABS/ACORDEONES */
+        .tabs-container {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .tabs-header {
+            display: flex;
+            background: #f9fafc;
+            border-bottom: 2px solid #e3f2fd;
+            padding: 0;
+        }
+        
+        .tab {
+            padding: 18px 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #546e7a;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            text-align: center;
+            justify-content: center;
+        }
+        
+        .tab:hover {
+            color: #1565c0;
+            background-color: rgba(21, 101, 192, 0.05);
+        }
+        
+        .tab.active {
+            color: #1565c0;
+            border-bottom-color: #1565c0;
+            background-color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 25px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Estilos para tabla de duplicados */
+        .duplicate-type-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .duplicate-type-CRÍTICO {
+            background-color: #ffebee;
+            color: #d32f2f;
+            border: 1px solid #ffcdd2;
+        }
+        
+        .duplicate-type-IMPORTANTE {
+            background-color: #fff3e0;
+            color: #f57c00;
+            border: 1px solid #ffe0b2;
+        }
+        
+        .btn-investigar {
+            background: linear-gradient(to right, #1565c0, #0d47a1);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-right: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-investigar:hover {
+            background: linear-gradient(to right, #0d47a1, #08306b);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(21, 101, 192, 0.3);
+        }
+        
+        .btn-consolidar {
+            background: linear-gradient(to right, #2e7d32, #1b5e20);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-consolidar:hover {
+            background: linear-gradient(to right, #1b5e20, #0d3c13);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(46, 125, 50, 0.3);
+        }
+        
         @media (max-width: 768px) {
             .charts-container, .data-sections, .advanced-viz-container {
                 grid-template-columns: 1fr;
@@ -1251,6 +1366,23 @@
             .org-chart-container, .heatmap-container {
                 max-height: 400px;
             }
+            
+            /* Ajustes para tabs en móviles */
+            .tabs-header {
+                flex-direction: column;
+            }
+            
+            .tab {
+                padding: 15px;
+                justify-content: flex-start;
+                border-bottom: 1px solid #e3f2fd;
+                border-right: none;
+            }
+            
+            .tab.active {
+                border-right: 3px solid #1565c0;
+                border-bottom: 1px solid #e3f2fd;
+            }
         }
         
         .chartjs-datalabels {
@@ -1285,7 +1417,7 @@
                 <span id="currentDateTime">Cargando fecha y hora...</span>
             </div>
             <div class="header-content">
-                <h1><i class="fas fa-chart-network"></i> Analizador 360 - HR Analytics Suite</h1>
+                <h1><i class="fas fa-chart-network"></i> XLS Luxanalitica - HR Analytics Suite</h1>
                 <p class="subtitle">Herramienta avanzada para análisis de población, estructura organizacional y preparación de evaluaciones 360°</p>
                 <div class="logo-badge">
                     <i class="fas fa-rocket"></i> PEOPLE ANALYTICS ENGINE
@@ -1564,35 +1696,72 @@
                     </div>
                 </div>
                 
+                <!-- NUEVO SISTEMA DE TABS -->
                 <div class="data-sections">
                     <div class="data-section">
-                        <div class="section-header">
-                            <h3 class="section-title"><i class="fas fa-exclamation-triangle"></i> Inconsistencias Detectadas</h3>
-                            <span id="inconsistenciesCount" class="badge badge-danger">0</span>
-                        </div>
-                        <p style="margin-bottom: 15px; color: #666;">Haz clic en cualquier celda para editar el valor. <i class="fas fa-lightbulb" style="color: #ff9800;"></i> indica sugerencias disponibles.</p>
-                        <div style="overflow-x: auto;">
-                            <table id="inconsistenciesTable">
-                                <thead>
-                                    <tr>
-                                        <th>Tipo</th>
-                                        <th>Identifier</th>
-                                        <th>Nombre</th>
-                                        <th>Área</th>
-                                        <th>Detalle</th>
-                                        <th>Acción</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="inconsistenciesBody"></tbody>
-                            </table>
-                        </div>
-                        <div style="text-align: center; margin-top: 20px;">
-                            <button id="downloadInconsistenciesBtn" class="btn btn-warning" disabled>
-                                <i class="fas fa-download"></i> Descargar Excel de Inconsistencias
-                            </button>
-                            <button id="quickFixBtn" class="btn btn-success" disabled>
-                                <i class="fas fa-magic"></i> Aplicar Correcciones Rápidas
-                            </button>
+                        <div class="tabs-container">
+                            <div class="tabs-header">
+                                <div class="tab active" data-tab="inconsistencies">
+                                    <i class="fas fa-exclamation-triangle"></i> Inconsistencias
+                                    <span id="inconsistenciesCount" class="badge badge-danger" style="margin-left: 8px;">0</span>
+                                </div>
+                                <div class="tab" data-tab="duplicates">
+                                    <i class="fas fa-retweet"></i> Duplicados
+                                    <span id="duplicatesCount" class="badge badge-warning" style="margin-left: 8px;">0</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Pestaña 1: Inconsistencias -->
+                            <div class="tab-content active" id="inconsistenciesTab">
+                                <p style="margin-bottom: 15px; color: #666;">Haz clic en cualquier celda para editar el valor. <i class="fas fa-lightbulb" style="color: #ff9800;"></i> indica sugerencias disponibles.</p>
+                                <div style="overflow-x: auto;">
+                                    <table id="inconsistenciesTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Tipo</th>
+                                                <th>Identifier</th>
+                                                <th>Nombre</th>
+                                                <th>Área</th>
+                                                <th>Detalle</th>
+                                                <th>Acción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="inconsistenciesBody"></tbody>
+                                    </table>
+                                </div>
+                                <div style="text-align: center; margin-top: 20px;">
+                                    <button id="downloadInconsistenciesBtn" class="btn btn-warning" disabled>
+                                        <i class="fas fa-download"></i> Descargar Excel de Inconsistencias
+                                    </button>
+                                    <button id="quickFixBtn" class="btn btn-success" disabled>
+                                        <i class="fas fa-magic"></i> Aplicar Correcciones Rápidas
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Pestaña 2: Duplicados (NUEVA) -->
+                            <div class="tab-content" id="duplicatesTab">
+                                <p style="margin-bottom: 15px; color: #666;">Duplicados detectados por Identifier (CRÍTICO), RUT (IMPORTANTE) y Email (IMPORTANTE).</p>
+                                <div style="overflow-x: auto;">
+                                    <table id="duplicatesTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Tipo</th>
+                                                <th>Valor Duplicado</th>
+                                                <th>Registros Afectados</th>
+                                                <th>Áreas</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="duplicatesBody"></tbody>
+                                    </table>
+                                </div>
+                                <div style="text-align: center; margin-top: 20px;">
+                                    <button id="downloadAllDuplicatesBtn" class="btn btn-warning" disabled>
+                                        <i class="fas fa-download"></i> Descargar Excel de Duplicados
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -1710,7 +1879,7 @@
         </div>
         
         <div class="footer">
-            <p><strong>Analizador 360 - HR Analytics Suite</strong> | Herramienta avanzada para análisis de población y evaluaciones 360°</p>
+            <p><strong>XLS Luxanalitica - HR Analytics Suite</strong> | Herramienta avanzada para análisis de población y evaluaciones 360°</p>
             <p style="margin-top: 10px;">Desarrollado con HTML, CSS, JavaScript, Chart.js y D3.js | Procesamiento 100% en el navegador</p>
         </div>
     </div>
@@ -1758,6 +1927,7 @@
         let originalData = [];
         let employees = [];
         let inconsistencies = [];
+        let duplicates = []; // NUEVA VARIABLE PARA DUPLICADOS
         let stats = {};
         let config = {};
         let genderChart, areaChart, subordinatesChart, tenureChart;
@@ -1887,6 +2057,13 @@
         const progressMessage = document.getElementById('progressMessage');
         const cancelGenerationBtn = document.getElementById('cancelGenerationBtn');
         
+        // NUEVOS ELEMENTOS PARA DUPLICADOS
+        const duplicatesCount = document.getElementById('duplicatesCount');
+        const duplicatesBody = document.getElementById('duplicatesBody');
+        const downloadAllDuplicatesBtn = document.getElementById('downloadAllDuplicatesBtn');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
         // Inicializar
         document.addEventListener('DOMContentLoaded', function() {
             updateCurrentDateTime();
@@ -1937,10 +2114,40 @@
                 progressMessage.textContent = "Cancelando generación...";
             });
             
+            // NUEVOS EVENT LISTENERS PARA TABS
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    activateTab(tabId);
+                });
+            });
+            
+            // Event listener para descargar todos los duplicados
+            downloadAllDuplicatesBtn.addEventListener('click', downloadAllDuplicates);
+            
             startAutoClearTimer();
             updateProgress(1);
             updateConfigToggleUI();
         });
+        
+        // NUEVA FUNCIÓN: Activar pestaña
+        function activateTab(tabId) {
+            // Desactivar todas las pestañas
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Desactivar todos los contenidos
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Activar pestaña seleccionada
+            document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+            
+            // Activar contenido correspondiente
+            document.getElementById(`${tabId}Tab`).classList.add('active');
+        }
         
         // Acordeón de requisitos
         function toggleRequirements() {
@@ -2136,6 +2343,10 @@
                     // Usar setTimeout para permitir que la animación se muestre
                     setTimeout(() => {
                         processData(jsonData);
+                        
+                        // NUEVO: Detectar duplicados después de procesar datos
+                        detectDuplicates();
+                        
                         performAnalysis();
                         
                         stopLoadingTimer();
@@ -2176,6 +2387,7 @@
             originalData = jsonData;
             employees = [];
             inconsistencies = [];
+            duplicates = []; // Reiniciar duplicados
             
             let headerRow = [];
             let startRow = 0;
@@ -2284,6 +2496,305 @@
                 if (employee.identifier) {
                     employees.push(employee);
                 }
+            }
+        }
+        
+        // NUEVA FUNCIÓN: Detectar duplicados
+        function detectDuplicates() {
+            duplicates = [];
+            
+            // Mapa para cada tipo de duplicado
+            const identifierMap = {};
+            const rutMap = {};
+            const emailMap = {};
+            
+            // Agrupar por identifier (CRÍTICO)
+            employees.forEach((emp, index) => {
+                if (emp.identifier && emp.identifier.trim() !== '') {
+                    if (!identifierMap[emp.identifier]) {
+                        identifierMap[emp.identifier] = [];
+                    }
+                    identifierMap[emp.identifier].push({ ...emp, rowIndex: index + 2 });
+                }
+                
+                if (emp.rut && emp.rut.trim() !== '') {
+                    if (!rutMap[emp.rut]) {
+                        rutMap[emp.rut] = [];
+                    }
+                    rutMap[emp.rut].push({ ...emp, rowIndex: index + 2 });
+                }
+                
+                if (emp.email && emp.email.trim() !== '') {
+                    if (!emailMap[emp.email]) {
+                        emailMap[emp.email] = [];
+                    }
+                    emailMap[emp.email].push({ ...emp, rowIndex: index + 2 });
+                }
+            });
+            
+            // Procesar duplicados de identifier (CRÍTICO)
+            Object.keys(identifierMap).forEach(key => {
+                if (identifierMap[key].length > 1) {
+                    const duplicate = {
+                        type: 'CRÍTICO',
+                        key: key,
+                        field: 'identifier',
+                        records: identifierMap[key],
+                        affectedCount: identifierMap[key].length,
+                        areas: [...new Set(identifierMap[key].map(r => r.area_name || r.area || 'N/A'))]
+                    };
+                    duplicates.push(duplicate);
+                }
+            });
+            
+            // Procesar duplicados de rut (IMPORTANTE)
+            Object.keys(rutMap).forEach(key => {
+                if (rutMap[key].length > 1) {
+                    const duplicate = {
+                        type: 'IMPORTANTE',
+                        key: key,
+                        field: 'rut',
+                        records: rutMap[key],
+                        affectedCount: rutMap[key].length,
+                        areas: [...new Set(rutMap[key].map(r => r.area_name || r.area || 'N/A'))]
+                    };
+                    duplicates.push(duplicate);
+                }
+            });
+            
+            // Procesar duplicados de email (IMPORTANTE)
+            Object.keys(emailMap).forEach(key => {
+                if (emailMap[key].length > 1) {
+                    const duplicate = {
+                        type: 'IMPORTANTE',
+                        key: key,
+                        field: 'email',
+                        records: emailMap[key],
+                        affectedCount: emailMap[key].length,
+                        areas: [...new Set(emailMap[key].map(r => r.area_name || r.area || 'N/A'))]
+                    };
+                    duplicates.push(duplicate);
+                }
+            });
+            
+            // Ordenar duplicados: primero CRÍTICO, luego IMPORTANTE
+            duplicates.sort((a, b) => {
+                if (a.type === 'CRÍTICO' && b.type !== 'CRÍTICO') return -1;
+                if (a.type !== 'CRÍTICO' && b.type === 'CRÍTICO') return 1;
+                return b.affectedCount - a.affectedCount;
+            });
+            
+            console.log(`Duplicados detectados: ${duplicates.length}`);
+        }
+        
+        // NUEVA FUNCIÓN: Actualizar tabla de duplicados
+        function updateDuplicatesTable() {
+            duplicatesBody.innerHTML = '';
+            
+            if (duplicates.length === 0) {
+                duplicatesBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 30px; color: #666;">
+                            <i class="fas fa-check-circle" style="color: #4caf50; font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                            No se han detectado duplicados.
+                        </td>
+                    </tr>`;
+                return;
+            }
+            
+            duplicates.forEach((dup, index) => {
+                const row = document.createElement('tr');
+                row.className = dup.type === 'CRÍTICO' ? 'error-row' : 'warning-row';
+                
+                // Formatear la lista de registros afectados
+                const affectedList = dup.records.map(r => 
+                    `${r.identifier} (${r.display_name || r.firstname || 'Sin nombre'})`
+                ).join(', ');
+                
+                // Limitar la longitud de la lista para no hacer la tabla demasiado ancha
+                const shortAffectedList = affectedList.length > 100 ? 
+                    affectedList.substring(0, 100) + '...' : affectedList;
+                
+                // Áreas afectadas
+                const areasText = dup.areas.join(', ');
+                const shortAreas = areasText.length > 50 ? 
+                    areasText.substring(0, 50) + '...' : areasText;
+                
+                row.innerHTML = `
+                    <td>
+                        <span class="duplicate-type-badge duplicate-type-${dup.type}">
+                            ${dup.type}
+                        </span>
+                        <br>
+                        <small>${dup.field}</small>
+                    </td>
+                    <td><strong>${dup.key}</strong></td>
+                    <td>
+                        <strong>${dup.affectedCount} registros:</strong><br>
+                        <small title="${affectedList}">${shortAffectedList}</small>
+                    </td>
+                    <td title="${areasText}">${shortAreas}</td>
+                    <td>
+                        <button class="btn-investigar" data-index="${index}" title="Descargar Excel con los registros duplicados">
+                            <i class="fas fa-search"></i> Investigar
+                        </button>
+                        <button class="btn-consolidar" data-index="${index}" title="Sugerir consolidación de registros">
+                            <i class="fas fa-compress-alt"></i> Sugerir Consolidación
+                        </button>
+                    </td>
+                `;
+                duplicatesBody.appendChild(row);
+            });
+            
+            // Event listeners para los botones de duplicados
+            document.querySelectorAll('.btn-investigar').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = this.dataset.index;
+                    downloadDuplicateInvestigation(index);
+                });
+            });
+            
+            document.querySelectorAll('.btn-consolidar').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = this.dataset.index;
+                    suggestConsolidation(index);
+                });
+            });
+        }
+        
+        // NUEVA FUNCIÓN: Descargar investigación de duplicado específico
+        function downloadDuplicateInvestigation(index) {
+            const dup = duplicates[index];
+            if (!dup) return;
+            
+            const format = document.querySelector('input[name="exportFormat"]:checked').value;
+            
+            // Crear datos para el Excel
+            const data = [
+                [`Reporte de Duplicados - ${dup.field}: ${dup.key}`, '', '', '', ''],
+                ['Tipo', dup.type],
+                ['Campo', dup.field],
+                ['Valor Duplicado', dup.key],
+                ['Registros Afectados', dup.records.length],
+                ['', ''],
+                ['Detalle de Registros Duplicados', '', '', '', ''],
+                ['Fila', 'Identifier', 'Nombre', 'Área', 'Email', 'RUT', 'Manager']
+            ];
+            
+            dup.records.forEach(record => {
+                data.push([
+                    record.rowIndex,
+                    record.identifier,
+                    record.display_name || `${record.firstname} ${record.lastname}`,
+                    record.area_name || record.area || 'N/A',
+                    record.email || 'N/A',
+                    record.rut || 'N/A',
+                    record.manager_identifier || 'N/A'
+                ]);
+            });
+            
+            if (format === 'excel') {
+                const worksheet = XLSX.utils.aoa_to_sheet(data);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Duplicados');
+                XLSX.writeFile(workbook, `Duplicados_${dup.field}_${dup.key}.xlsx`);
+            } else {
+                const csvContent = data.map(row => 
+                    row.map(cell => `"${cell}"`).join(',')
+                ).join('\n');
+                
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `Duplicados_${dup.field}_${dup.key}.csv`;
+                link.click();
+            }
+        }
+        
+        // NUEVA FUNCIÓN: Sugerir consolidación
+        function suggestConsolidation(index) {
+            const dup = duplicates[index];
+            if (!dup) return;
+            
+            // Crear sugerencias de consolidación basadas en los datos
+            let suggestion = `Sugerencia de consolidación para ${dup.field}: ${dup.key}\n\n`;
+            suggestion += `Se detectaron ${dup.records.length} registros duplicados.\n\n`;
+            
+            if (dup.field === 'identifier') {
+                suggestion += `CRÍTICO: Identifier duplicado. Esto puede causar problemas graves en el sistema.\n`;
+                suggestion += `Recomendación: Mantener solo un registro con este identifier y eliminar los demás.\n`;
+                suggestion += `Si son empleados diferentes, asignar identifiers únicos.`;
+            } else if (dup.field === 'rut') {
+                suggestion += `IMPORTANTE: RUT duplicado. Una persona no puede tener múltiples RUTs.\n`;
+                suggestion += `Recomendación: Verificar si es el mismo empleado con múltiples registros.\n`;
+                suggestion += `Consolidar la información en un solo registro.`;
+            } else if (dup.field === 'email') {
+                suggestion += `IMPORTANTE: Email duplicado. Un email debe ser único por empleado.\n`;
+                suggestion += `Recomendación: Verificar si los empleados comparten email.\n`;
+                suggestion += `Asignar emails únicos o consolidar registros si es la misma persona.`;
+            }
+            
+            suggestion += `\n\nUse el botón "Investigar" para descargar los detalles completos.`;
+            
+            // En una implementación más avanzada, esto podría abrir un modal con opciones
+            alert(suggestion);
+        }
+        
+        // NUEVA FUNCIÓN: Descargar todos los duplicados
+        function downloadAllDuplicates() {
+            if (duplicates.length === 0) return;
+            
+            const format = document.querySelector('input[name="exportFormat"]:checked').value;
+            
+            const data = [
+                ['Reporte de Todos los Duplicados Detectados', '', '', '', '', ''],
+                ['Fecha de generación', new Date().toLocaleString('es-ES')],
+                ['Total de duplicados encontrados', duplicates.length],
+                ['', ''],
+                ['Tipo', 'Campo', 'Valor Duplicado', 'Registros Afectados', 'Áreas Afectadas', 'Detalles']
+            ];
+            
+            duplicates.forEach(dup => {
+                const affectedList = dup.records.map(r => 
+                    `${r.identifier} (${r.display_name || r.firstname || 'Sin nombre'})`
+                ).join('; ');
+                
+                const areasText = dup.areas.join('; ');
+                
+                data.push([
+                    dup.type,
+                    dup.field,
+                    dup.key,
+                    dup.records.length,
+                    areasText,
+                    affectedList
+                ]);
+            });
+            
+            // Agregar resumen por tipo
+            const criticoCount = duplicates.filter(d => d.type === 'CRÍTICO').length;
+            const importanteCount = duplicates.filter(d => d.type === 'IMPORTANTE').length;
+            
+            data.push(['', '', '', '', '', '']);
+            data.push(['Resumen por Tipo', '', '', '', '', '']);
+            data.push(['CRÍTICO (identifier)', criticoCount, '', '', '', '']);
+            data.push(['IMPORTANTE (rut, email)', importanteCount, '', '', '', '']);
+            
+            if (format === 'excel') {
+                const worksheet = XLSX.utils.aoa_to_sheet(data);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Todos_Duplicados');
+                XLSX.writeFile(workbook, 'Todos_Duplicados_Detectados.xlsx');
+            } else {
+                const csvContent = data.map(row => 
+                    row.map(cell => `"${cell}"`).join(',')
+                ).join('\n');
+                
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'Todos_Duplicados_Detectados.csv';
+                link.click();
             }
         }
         
@@ -2550,6 +3061,8 @@
                 managerSubordinates: {},
                 tenureGroups: { '<1 año': 0, '1-3 años': 0, '3-5 años': 0, '5-10 años': 0, '10+ años': 0 },
                 inconsistencies: inconsistencies.length,
+                duplicates: duplicates.length, // NUEVA ESTADÍSTICA
+                duplicatesByType: { 'CRÍTICO': 0, 'IMPORTANTE': 0 }, // NUEVA ESTADÍSTICA
                 evaluationLoad: {},
                 coverageStats: {
                     withAscendente: 0,
@@ -2608,6 +3121,11 @@
                     // Si no hay fecha de ingreso, contar como "<1 año"
                     stats.tenureGroups['<1 año']++;
                 }
+            });
+            
+            // NUEVO: Calcular estadísticas de duplicados por tipo
+            duplicates.forEach(dup => {
+                stats.duplicatesByType[dup.type] = (stats.duplicatesByType[dup.type] || 0) + 1;
             });
             
             calculateEvaluationLoad();
@@ -2808,6 +3326,10 @@
             const inconsistenciesPercentage = stats.totalEmployees > 0 ? 
                 Math.round((stats.inconsistencias / stats.totalEmployees) * 1000) / 10 : 0;
             
+            // NUEVO: Porcentaje de duplicados
+            const duplicatesPercentage = stats.totalEmployees > 0 ? 
+                Math.round((stats.duplicates / stats.totalEmployees) * 1000) / 10 : 0;
+            
             return {
                 genderMPercentage,
                 genderFPercentage,
@@ -2815,17 +3337,21 @@
                 withManagerPercentage,
                 coveragePercentage,
                 overloadPercentage,
-                inconsistenciesPercentage
+                inconsistenciesPercentage,
+                duplicatesPercentage
             };
         }
         
         // Actualizar UI
         function updateUI() {
             inconsistenciesCount.textContent = stats.inconsistencias;
+            duplicatesCount.textContent = stats.duplicates; // NUEVO
             downloadInconsistenciesBtn.disabled = stats.inconsistencias === 0;
             quickFixBtn.disabled = stats.inconsistencias === 0;
+            downloadAllDuplicatesBtn.disabled = stats.duplicates === 0; // NUEVO
             
             updateInconsistenciesTable();
+            updateDuplicatesTable(); // NUEVO
             updateManagersTable();
             updateStatsCards();
             
@@ -2918,7 +3444,7 @@
             });
         }
         
-        // Actualizar tarjetas de estadísticas
+        // Actualizar tarjetas de estadísticas - MEJORADA con duplicados
         function updateStatsCards() {
             const percentages = calculatePercentages();
             const coveragePercentage = stats.coverageStats.fullyCovered > 0 ? 
@@ -2975,7 +3501,19 @@
                     <div class="stat-desc">${stats.coverageStats.fullyCovered} empleados con evaluación completa</div>
                 </div>
                 
-                <!-- NUEVA ESTADÍSTICA: Evaluaciones por persona -->
+                <!-- NUEVA ESTADÍSTICA: Duplicados Detectados -->
+                <div class="stat-card ${stats.duplicates > 0 ? 'danger' : 'success'}">
+                    <div class="stat-title"><i class="fas fa-copy"></i> Duplicados Detectados</div>
+                    <div class="stat-value ${stats.duplicates > 0 ? 'danger' : 'success'}">
+                        ${stats.duplicates}
+                        <span class="percentage">(${percentages.duplicatesPercentage}%)</span>
+                    </div>
+                    <div class="stat-desc">
+                        CRÍTICO: ${stats.duplicatesByType?.CRÍTICO || 0} | 
+                        IMPORTANTE: ${stats.duplicatesByType?.IMPORTANTE || 0}
+                    </div>
+                </div>
+                
                 <div class="stat-card ${stats.evaluationStats.avgEvaluations > 10 ? 'warning' : 'success'}">
                     <div class="stat-title"><i class="fas fa-chart-bar"></i> Evaluaciones por Persona</div>
                     <div class="stat-value ${stats.evaluationStats.avgEvaluations > 10 ? 'warning' : 'success'}">
@@ -3394,6 +3932,8 @@
                 employee[item.field] = newValue;
                 
                 if (item.field === 'manager_identifier') {
+                    // Volver a detectar duplicados si se cambió un identifier
+                    detectDuplicates();
                     performAnalysis();
                 }
                 
@@ -3417,6 +3957,11 @@
             const employee = employees.find(emp => emp.identifier === item.identifier);
             if (employee && item.field) {
                 employee[item.field] = newValue;
+                
+                // Volver a detectar duplicados si se cambió un identifier
+                if (item.field === 'identifier' || item.field === 'rut' || item.field === 'email') {
+                    detectDuplicates();
+                }
                 
                 inconsistencies.splice(index, 1);
                 updateUI();
@@ -3448,6 +3993,8 @@
                 !fixableItems.includes(item)
             );
             
+            // Volver a detectar duplicados después de correcciones
+            detectDuplicates();
             performAnalysis();
             
             alert(`Se aplicaron ${fixedCount} correcciones rápidas.`);
@@ -3854,7 +4401,7 @@
             }
         }
         
-        // Descargar reporte ejecutivo
+        // Descargar reporte ejecutivo - MEJORADO con duplicados
         function downloadReporte() {
             const workbook = XLSX.utils.book_new();
             
@@ -3883,6 +4430,9 @@
                 ['Mínimo evaluaciones por persona', stats.evaluationStats.minEvaluations],
                 ['Promedio evaluaciones por persona', stats.evaluationStats.avgEvaluations.toFixed(1)],
                 ['Inconsistencias detectadas', stats.inconsistencias],
+                ['Duplicados detectados', stats.duplicates],
+                ['• Duplicados CRÍTICO (identifier)', stats.duplicatesByType?.CRÍTICO || 0],
+                ['• Duplicados IMPORTANTE (rut, email)', stats.duplicatesByType?.IMPORTANTE || 0],
                 [''],
                 ['DISTRIBUCIÓN POR AÑOS EN LA EMPRESA', ''],
                 ['Menos de 1 año', stats.tenureGroups['<1 año']],
@@ -3893,10 +4443,12 @@
                 [''],
                 ['RECOMENDACIONES PARA EVALUACIÓN 360°', ''],
                 ['1. Verificar y corregir las inconsistencias antes de proceder', ''],
-                ['2. Pares: Todos los compañeros con el mismo manager (excluyendo al manager)', ''],
-                ['3. Balancear la carga de evaluación entre managers', ''],
-                ['4. Validar que todos los managers existan en el sistema', ''],
-                ['5. Revisar ciclos jerárquicos antes de la evaluación', '']
+                ['2. Resolver duplicados CRÍTICOS (identifier) antes de continuar', ''],
+                ['3. Revisar duplicados IMPORTANTES (rut, email)', ''],
+                ['4. Pares: Todos los compañeros con el mismo manager (excluyendo al manager)', ''],
+                ['5. Balancear la carga de evaluación entre managers', ''],
+                ['6. Validar que todos los managers existan en el sistema', ''],
+                ['7. Revisar ciclos jerárquicos antes de la evaluación', '']
             ];
             
             const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
@@ -3924,6 +4476,39 @@
             
             const managersSheet = XLSX.utils.aoa_to_sheet(managersData);
             XLSX.utils.book_append_sheet(workbook, managersSheet, 'Top Managers');
+            
+            // NUEVA HOJA: Duplicados Detectados
+            if (duplicates.length > 0) {
+                const duplicatesData = [
+                    ['DUPLICADOS DETECTADOS'],
+                    ['Tipo', 'Campo', 'Valor Duplicado', 'Registros Afectados', 'Áreas', 'Recomendación']
+                ];
+                
+                duplicates.forEach(dup => {
+                    let recomendacion = '';
+                    if (dup.type === 'CRÍTICO') {
+                        recomendacion = 'Resolver inmediatamente. Identifier debe ser único.';
+                    } else if (dup.type === 'IMPORTANTE') {
+                        if (dup.field === 'rut') {
+                            recomendacion = 'Verificar si es la misma persona. RUT debe ser único.';
+                        } else if (dup.field === 'email') {
+                            recomendacion = 'Verificar emails. Cada empleado debe tener email único.';
+                        }
+                    }
+                    
+                    duplicatesData.push([
+                        dup.type,
+                        dup.field,
+                        dup.key,
+                        dup.affectedCount,
+                        dup.areas.join(', '),
+                        recomendacion
+                    ]);
+                });
+                
+                const duplicatesSheet = XLSX.utils.aoa_to_sheet(duplicatesData);
+                XLSX.utils.book_append_sheet(workbook, duplicatesSheet, 'Duplicados');
+            }
             
             const areaData = [
                 ['DISTRIBUCIÓN DE EMPLEADOS POR ÁREA'],
@@ -3985,6 +4570,7 @@
             originalData = [];
             employees = [];
             inconsistencies = [];
+            duplicates = []; // NUEVO: Limpiar duplicados
             stats = {};
             processingTime = 0;
             
@@ -4008,19 +4594,23 @@
             
             // Actualizar UI
             inconsistenciesCount.textContent = '0';
+            duplicatesCount.textContent = '0'; // NUEVO
             downloadInconsistenciesBtn.disabled = true;
             quickFixBtn.disabled = true;
+            downloadAllDuplicatesBtn.disabled = true; // NUEVO
             
             // Limpiar tablas
             inconsistenciesBody.innerHTML = '';
+            duplicatesBody.innerHTML = ''; // NUEVO
             managersBody.innerHTML = '';
             statsGrid.innerHTML = '';
             
             // Asegurarse de que el botón de upload esté deshabilitado
             uploadBtn.disabled = true;
+            
+            // Restablecer pestaña activa a Inconsistencias
+            activateTab('inconsistencies');
         }
     </script>
 </body>
-
 </html>
-
