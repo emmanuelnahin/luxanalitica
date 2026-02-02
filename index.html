@@ -12,6 +12,7 @@
     <!-- Añadir pako para compresión -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
     <style>
+        /* ESTILOS EXISTENTES MANTENIDOS - NO TOCAR */
         * {
             margin: 0;
             padding: 0;
@@ -24,6 +25,12 @@
             color: #333;
             line-height: 1.6;
             padding: 20px;
+            position: relative;
+            transition: margin-left 0.3s ease;
+        }
+        
+        body.sidebar-expanded {
+            margin-left: 280px;
         }
         
         .container {
@@ -33,8 +40,301 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             overflow: hidden;
+            transition: all 0.3s ease;
         }
         
+        /* MODAL DE SEGURIDAD LEGAL - NUEVO */
+        .security-modal {
+            display: flex;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .security-modal-content {
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+            border-left: 8px solid #1565c0;
+        }
+        
+        .security-modal h2 {
+            color: #0d47a1;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .security-modal h2 i {
+            color: #1565c0;
+        }
+        
+        .security-warning {
+            background-color: #fff3e0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #f57c00;
+            margin: 20px 0;
+        }
+        
+        .security-warning h3 {
+            color: #f57c00;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legal-terms {
+            background-color: #f5f5f5;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .legal-terms h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .legal-terms ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .legal-terms li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .terms-checkbox {
+            margin: 25px 0;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .terms-checkbox label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+        }
+        
+        .terms-checkbox input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        /* SIDEBAR MENU - NUEVO */
+        .sidebar {
+            position: fixed;
+            left: -250px;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #0d47a1 0%, #1565c0 100%);
+            color: white;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            padding-top: 20px;
+        }
+        
+        .sidebar.expanded {
+            left: 0;
+        }
+        
+        .sidebar-toggle {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            background: #1565c0;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+        
+        .sidebar-toggle:hover {
+            background: #0d47a1;
+            transform: scale(1.1);
+        }
+        
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-header h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .menu-items {
+            padding: 0 15px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 4px solid #ff9800;
+            font-weight: 600;
+        }
+        
+        .menu-item.active::after {
+            content: '✓';
+            position: absolute;
+            right: 20px;
+            color: #4caf50;
+            font-weight: bold;
+        }
+        
+        .menu-item i {
+            font-size: 1.3rem;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .menu-item-text h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .menu-item-text p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+        
+        .coming-soon-badge {
+            background: #ff9800;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .menu-section {
+            margin: 25px 0 15px 20px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .sidebar-footer {
+            padding: 20px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            opacity: 0.7;
+            text-align: center;
+        }
+        
+        /* SEÑALIZACIÓN DE SECCIONES EN CONSTRUCCIÓN */
+        .construction-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .construction-message {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 500px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        /* ESTILOS ORIGINALES DEL HTML - MANTENIDOS SIN CAMBIOS */
+        /* [Todos los estilos originales se mantienen aquí] */
         header {
             background: linear-gradient(135deg, #0d47a1, #1565c0);
             color: white;
@@ -1286,6 +1586,27 @@
         }
         
         @media (max-width: 768px) {
+            body.sidebar-expanded {
+                margin-left: 0;
+            }
+            
+            .sidebar {
+                width: 100%;
+                left: -100%;
+            }
+            
+            .sidebar.expanded {
+                left: 0;
+            }
+            
+            .sidebar-toggle {
+                left: 10px;
+                top: 10px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            
             .charts-container, .data-sections, .advanced-viz-container {
                 grid-template-columns: 1fr;
             }
@@ -1410,6 +1731,154 @@
     </style>
 </head>
 <body>
+    <!-- MODAL DE SEGURIDAD LEGAL (siempre aparece al inicio) -->
+    <div class="security-modal" id="securityModal">
+        <div class="security-modal-content">
+            <h2><i class="fas fa-shield-alt"></i> 🔒 Aviso de Privacidad y Seguridad Financiera</h2>
+            
+            <div class="security-warning">
+                <h3><i class="fas fa-exclamation-triangle"></i> Información Importante</h3>
+                <p>Esta herramienta procesa información sensible (datos personales, contables o financieros) <strong>exclusivamente en su navegador</strong>.</p>
+                
+                <ul>
+                    <li><strong>Cero Transferencia:</strong> Sus archivos Excel no se suben a ningún servidor ni nube. Nadie, excepto usted, tiene acceso a la información.</li>
+                    <li><strong>Responsabilidad:</strong> Al ser un proceso local, usted mantiene el control total y la responsabilidad legal sobre la protección de los datos procesados.</li>
+                </ul>
+            </div>
+            
+            <div class="terms-checkbox">
+                <label>
+                    <input type="checkbox" id="termsCheckbox">
+                    <span>Declaro que tengo derecho a procesar estos datos, acepto los Términos de Servicio y entiendo que el uso de esta herramienta es bajo mi propia responsabilidad.</span>
+                </label>
+            </div>
+            
+            <div class="legal-terms" id="legalTerms">
+                <h4>TÉRMINOS Y CONDICIONES - HERRAMIENTA DE PROCESAMIENTO LOCAL</h4>
+                
+                <p><strong>1. Naturaleza del Servicio y Ausencia de Intermediación de Datos</strong><br>
+                El usuario reconoce que esta plataforma es una herramienta de software de ejecución local ("Client-Side").</p>
+                
+                <ul>
+                    <li><strong>No somos Encargados del Tratamiento:</strong> El propietario de la web no recolecta, almacena, ni visualiza ningún dato personal, financiero o contable contenido en los archivos Excel del usuario.</li>
+                    <li><strong>Cumplimiento Normativo:</strong> Dado que los datos nunca salen del dispositivo del usuario, el uso de esta herramienta no constituye una transferencia internacional de datos ni una cesión a terceros bajo las leyes de protección de datos vigentes.</li>
+                </ul>
+                
+                <p><strong>2. Responsabilidad sobre Datos Personales y Financieros</strong><br>
+                El usuario es el único "Responsable del Tratamiento" de los datos que carga.</p>
+                
+                <ul>
+                    <li>El usuario garantiza que los datos personales (nombres, identificaciones, correos) y financieros (nóminas, balances, cuentas bancarias) son procesados legalmente y cuenta con el consentimiento de los titulares si fuera necesario.</li>
+                    <li>El propietario de la web se exime de cualquier responsabilidad ante sanciones, multas o demandas derivadas de la manipulación indebida de datos sensibles por parte del usuario.</li>
+                </ul>
+                
+                <p><strong>3. Exención de Responsabilidad en Cálculos Contables</strong><br>
+                Aunque nos esforzamos por la precisión técnica, el software puede contener errores.</p>
+                
+                <ul>
+                    <li><strong>Verificación Obligatoria:</strong> Esta herramienta no sustituye el criterio de un contador o auditor profesional. El usuario se compromete a verificar manualmente la exactitud de cualquier cálculo, suma, o conversión antes de presentar dicha información ante autoridades tributarias, bancos o terceros.</li>
+                    <li>El desarrollador no se hace responsable por errores en declaraciones de impuestos, nóminas incorrectas o desajustes contables causados por el uso de la herramienta.</li>
+                </ul>
+                
+                <p><strong>4. Seguridad del Entorno Local</strong><br>
+                La confidencialidad de los datos depende íntegramente de la seguridad del dispositivo del usuario. Recomendamos no utilizar esta herramienta en ordenadores públicos (cibercafés, bibliotecas) si se procesan datos sensibles, ya que el navegador del usuario podría tener malware o extensiones que capturen información localmente, situación ajena a nuestro control.</p>
+                
+                <p><strong>5. Renuncia de Garantías y Limitación de Daños</strong><br>
+                El servicio se entrega "TAL CUAL" (AS IS). En la máxima medida permitida por la ley, el propietario de la web no será responsable por daños directos o indirectos, lucro cesante o pérdida de información confidencial. El usuario asume todo el riesgo derivado del uso y rendimiento de la herramienta.</p>
+            </div>
+            
+            <div class="modal-actions">
+                <a href="#" id="viewLegalLink" style="color: #1565c0; text-decoration: none; font-size: 0.9rem;">
+                    <i class="fas fa-file-contract"></i> Ver Términos Legales y Exención de Responsabilidad
+                </a>
+                <button id="accessToolBtn" class="btn btn-primary" disabled>
+                    <i class="fas fa-door-open"></i> ACCEDER A LA HERRAMIENTA
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR MENU -->
+    <div class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </div>
+    
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-rocket"></i> Luxanalitica Suite</h3>
+            <p>HR Analytics Platform</p>
+        </div>
+        
+        <div class="menu-section">MÓDULOS PRINCIPALES</div>
+        <div class="menu-items">
+            <div class="menu-item active" data-section="centro-datos">
+                <i class="fas fa-database"></i>
+                <div class="menu-item-text">
+                    <h4>📂 Centro de Datos</h4>
+                    <p>Donde todo comienza. Limpieza y validación de datos.</p>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-section="analytics">
+                <i class="fas fa-chart-bar"></i>
+                <div class="menu-item-text">
+                    <h4>📊 Tableros de Analytics <span class="coming-soon-badge">Próximamente</span></h4>
+                    <p>Análisis descriptivo: demografía, compensaciones y rotación.</p>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-section="kpis">
+                <i class="fas fa-bullseye"></i>
+                <div class="menu-item-text">
+                    <h4>🎯 Planificador de KPIs y Bonos <span class="coming-soon-badge">Próximamente</span></h4>
+                    <p>Configuración de reglas y simulador de pagos por desempeño.</p>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-section="estructura">
+                <i class="fas fa-sitemap"></i>
+                <div class="menu-item-text">
+                    <h4>🕸️ Estructura Organizacional <span class="coming-soon-badge">Próximamente</span></h4>
+                    <p>Organigramas interactivos y análisis de tramos de control.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-section">HERRAMIENTAS</div>
+        <div class="menu-items">
+            <div class="menu-item" data-section="evaluacion">
+                <i class="fas fa-360-degrees"></i>
+                <div class="menu-item-text">
+                    <h4>🔄 Evaluación 360°</h4>
+                    <p>Generación de relaciones ascendentes y pares (actual).</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sidebar-footer">
+            <p>Versión 2.0 | Procesamiento 100% local</p>
+            <p><i class="fas fa-lock"></i> Sus datos nunca salen de su dispositivo</p>
+        </div>
+    </div>
+
+    <!-- OVERLAY PARA SECCIONES EN CONSTRUCCIÓN -->
+    <div class="construction-overlay" id="constructionOverlay">
+        <div class="construction-message">
+            <i class="fas fa-tools" style="font-size: 4rem; color: #1565c0; margin-bottom: 20px;"></i>
+            <h2 style="color: #0d47a1; margin-bottom: 15px;">🚧 Sección en Construcción</h2>
+            <p style="margin-bottom: 20px; color: #666; line-height: 1.6;">
+                Esta funcionalidad estará disponible muy pronto. Estamos trabajando en nuevas herramientas avanzadas para análisis de People Analytics.
+            </p>
+            <p style="font-style: italic; color: #888; margin-bottom: 25px;">
+                "Mientras tanto, puedes utilizar todas las funciones del <strong>Centro de Datos</strong> y la <strong>Evaluación 360°</strong> que ya están operativas."
+            </p>
+            <button id="closeConstructionBtn" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> Volver al Centro de Datos
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL ORIGINAL (NO MODIFICADO) -->
     <div class="container">
         <header>
             <div class="header-time">
@@ -1448,10 +1917,14 @@
         </div>
         
         <div class="main-content">
+            <!-- SECCIÓN DE CENTRO DE DATOS (activada por defecto) -->
             <div class="upload-section" id="uploadSection">
                 <h2 style="color: #0d47a1; margin-bottom: 25px; font-size: 1.8rem;">
-                    <i class="fas fa-cloud-upload-alt"></i> Paso 1: Cargar Archivo de Población
+                    <i class="fas fa-database"></i> Centro de Datos: Cargar Archivo de Población
                 </h2>
+                <p style="color: #546e7a; max-width: 800px; margin: 0 auto 25px; font-size: 1.1rem;">
+                    Esta es la base de todo. Comienza subiendo tu archivo Excel para limpieza, validación y preparación de datos.
+                </p>
                 
                 <div class="file-input-container">
                     <label for="fileInput" class="file-input-label">
@@ -1506,6 +1979,7 @@
                 </div>
             </div>
             
+            <!-- SECCIÓN DE CONFIGURACIÓN -->
             <div class="config-section" id="configSection">
                 <h2 style="color: #0d47a1; margin-bottom: 25px; font-size: 1.8rem;">
                     <i class="fas fa-cogs"></i> Paso 2: Configurar Análisis 360°
@@ -1587,6 +2061,7 @@
                 </div>
             </div>
             
+            <!-- LOADING -->
             <div class="loading" id="loading">
                 <div class="brain-container">
                     <i class="fas fa-brain brain-icon"></i>
@@ -1599,6 +2074,7 @@
                 </p>
             </div>
             
+            <!-- DASHBOARD -->
             <div class="dashboard" id="dashboard">
                 <div class="dashboard-header">
                     <h2 class="dashboard-title">
@@ -1788,6 +2264,7 @@
                     </div>
                 </div>
                 
+                <!-- SECCIÓN DE DESCARGA (Exportación) -->
                 <div class="download-section" id="downloadSection">
                     <h2 style="color: #0d47a1; margin-bottom: 10px;">
                         <i class="fas fa-file-export"></i> Paso 4: Generar Archivos de Exportación
@@ -1920,6 +2397,149 @@
     </div>
 
     <script>
+        // ==============================================
+        // NUEVO CÓDIGO PARA LAS MEJORAS
+        // ==============================================
+        
+        // Variables para las nuevas funcionalidades
+        let currentSection = 'centro-datos'; // Por defecto activamos el Centro de Datos
+        let termsAccepted = false;
+        
+        // Elementos del DOM para las nuevas funcionalidades
+        const securityModal = document.getElementById('securityModal');
+        const termsCheckbox = document.getElementById('termsCheckbox');
+        const accessToolBtn = document.getElementById('accessToolBtn');
+        const viewLegalLink = document.getElementById('viewLegalLink');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const menuItems = document.querySelectorAll('.menu-item');
+        const constructionOverlay = document.getElementById('constructionOverlay');
+        const closeConstructionBtn = document.getElementById('closeConstructionBtn');
+        
+        // FUNCIÓN: Inicializar las nuevas funcionalidades
+        function initializeEnhancements() {
+            // 1. Mostrar modal de seguridad al cargar la página
+            showSecurityModal();
+            
+            // 2. Configurar eventos del modal de seguridad
+            termsCheckbox.addEventListener('change', function() {
+                accessToolBtn.disabled = !this.checked;
+            });
+            
+            accessToolBtn.addEventListener('click', function() {
+                if (termsCheckbox.checked) {
+                    termsAccepted = true;
+                    securityModal.style.display = 'none';
+                    document.body.classList.add('sidebar-expanded');
+                    sidebar.classList.add('expanded');
+                    activateSection('centro-datos');
+                }
+            });
+            
+            viewLegalLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                const legalTerms = document.getElementById('legalTerms');
+                legalTerms.style.maxHeight = legalTerms.style.maxHeight ? '' : '600px';
+                this.innerHTML = legalTerms.style.maxHeight ? 
+                    '<i class="fas fa-chevron-up"></i> Ocultar Términos Legales' : 
+                    '<i class="fas fa-file-contract"></i> Ver Términos Legales y Exención de Responsabilidad';
+            });
+            
+            // 3. Configurar sidebar
+            sidebarToggle.addEventListener('click', function() {
+                const isExpanded = sidebar.classList.toggle('expanded');
+                document.body.classList.toggle('sidebar-expanded', isExpanded);
+                this.innerHTML = isExpanded ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+            });
+            
+            // 4. Configurar menú items
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const section = this.dataset.section;
+                    activateSection(section);
+                    
+                    // Si no es centro-datos o evaluacion, mostrar construcción
+                    if (section !== 'centro-datos' && section !== 'evaluacion') {
+                        showConstructionMessage(section);
+                    }
+                });
+            });
+            
+            // 5. Configurar botón para cerrar mensaje de construcción
+            closeConstructionBtn.addEventListener('click', function() {
+                constructionOverlay.style.display = 'none';
+                activateSection('centro-datos');
+            });
+            
+            // 6. Por defecto, activar el Centro de Datos
+            setTimeout(() => {
+                if (termsAccepted) {
+                    activateSection('centro-datos');
+                }
+            }, 100);
+        }
+        
+        // FUNCIÓN: Mostrar modal de seguridad
+        function showSecurityModal() {
+            // Mostrar siempre al inicio
+            securityModal.style.display = 'flex';
+            
+            // Guardar en localStorage que se ha visto (opcional, para desarrollo)
+            localStorage.setItem('securityModalShown', 'true');
+        }
+        
+        // FUNCIÓN: Activar una sección
+        function activateSection(section) {
+            // Remover active de todos los items del menú
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Activar el item correspondiente
+            document.querySelector(`.menu-item[data-section="${section}"]`).classList.add('active');
+            
+            // Actualizar sección actual
+            currentSection = section;
+            
+            // Si es centro-datos, asegurarse de que todo esté visible
+            if (section === 'centro-datos') {
+                // Asegurar que el contenido principal esté visible
+                document.querySelector('.container').style.display = 'block';
+                document.querySelector('.main-content').style.display = 'block';
+                constructionOverlay.style.display = 'none';
+            }
+        }
+        
+        // FUNCIÓN: Mostrar mensaje de construcción
+        function showConstructionMessage(section) {
+            // Obtener nombre de la sección
+            let sectionName = '';
+            switch(section) {
+                case 'analytics':
+                    sectionName = 'Tableros de Analytics';
+                    break;
+                case 'kpis':
+                    sectionName = 'Planificador de KPIs y Bonos';
+                    break;
+                case 'estructura':
+                    sectionName = 'Estructura Organizacional';
+                    break;
+                default:
+                    sectionName = 'Esta sección';
+            }
+            
+            // Actualizar mensaje
+            const message = constructionOverlay.querySelector('p');
+            message.innerHTML = `Esta funcionalidad estará disponible muy pronto. Estamos trabajando en <strong>${sectionName}</strong> para ofrecerte herramientas avanzadas de People Analytics.`;
+            
+            // Mostrar overlay
+            constructionOverlay.style.display = 'flex';
+        }
+        
+        // ==============================================
+        // CÓDIGO ORIGINAL MANTENIDO SIN CAMBIOS
+        // ==============================================
+        
         // Registrar plugin de datalabels
         Chart.register(ChartDataLabels);
         
@@ -2066,6 +2686,10 @@
         
         // Inicializar
         document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar mejoras primero
+            initializeEnhancements();
+            
+            // Luego el código original
             updateCurrentDateTime();
             setInterval(updateCurrentDateTime, 1000);
             
@@ -4614,3 +5238,4 @@
     </script>
 </body>
 </html>
+
