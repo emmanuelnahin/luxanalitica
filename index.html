@@ -144,9 +144,9 @@
         }
         
         .terms-checkbox input[type="checkbox"] {
-            width: 45px;
-            height: 45px;
-            cursor: pointer; margin-right: 3px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
         }
         
         .modal-actions {
@@ -1585,6 +1585,149 @@
             box-shadow: 0 4px 8px rgba(46, 125, 50, 0.3);
         }
         
+        /* NUEVOS ESTILOS PARA EL BOTÓN FLOTANTE DE CONTACTO */
+        .contact-floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 998;
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.3);
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+        
+        .contact-floating-btn:hover {
+            background: linear-gradient(135deg, #0d47a1, #08306b);
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(21, 101, 192, 0.4);
+        }
+        
+        .contact-panel {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            max-height: 500px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            overflow: hidden;
+            display: none;
+            border: 1px solid #e3f2fd;
+        }
+        
+        .contact-panel.expanded {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .contact-header {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .contact-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .contact-body {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .contact-body p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .contact-body strong {
+            color: #0d47a1;
+        }
+        
+        .contact-email {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #2e7d32;
+            text-align: center;
+        }
+        
+        .contact-email a {
+            color: #1565c0;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .contact-email a:hover {
+            color: #0d47a1;
+            text-decoration: underline;
+        }
+        
+        .contact-footer {
+            padding: 15px;
+            text-align: center;
+            border-top: 1px solid #e3f2fd;
+            background: #f9fafc;
+            font-size: 0.9rem;
+            color: #546e7a;
+        }
+        
+        .close-contact {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .close-contact:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
         @media (max-width: 768px) {
             body.sidebar-expanded {
                 margin-left: 0;
@@ -1704,6 +1847,19 @@
                 border-right: 3px solid #1565c0;
                 border-bottom: 1px solid #e3f2fd;
             }
+            
+            /* Ajustes para el panel de contacto en móviles */
+            .contact-panel {
+                width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+            }
+            
+            .contact-floating-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
         }
         
         .chartjs-datalabels {
@@ -1795,6 +1951,41 @@
                     <i class="fas fa-door-open"></i> ACCEDER A LA HERRAMIENTA
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- BOTÓN FLOTANTE Y PANEL DE CONTACTO -->
+    <div class="contact-floating-btn" id="contactFloatingBtn">
+        <i class="fas fa-comment-alt"></i>
+    </div>
+    
+    <div class="contact-panel" id="contactPanel">
+        <div class="contact-header">
+            <h3><i class="fas fa-users"></i> ¿Quiénes Somos?</h3>
+            <button class="close-contact" id="closeContactBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="contact-body">
+            <p><strong>Somos un grupo de ingenieros y estadistas que nos unimos junto a las IA para crear esta herramienta sin fines de lucro y abierta para el mundo.</strong></p>
+            
+            <p>Luxanalitica actúa como tu filtro de seguridad definitivo. Con solo cargar tu Excel, detectamos inconsistencias y anomalías matemáticas, generando reportes visuales al instante.</p>
+            
+            <p>Deja que tus sistemas gestionen el negocio y permítenos asegurar la calidad de tus datos. Olvídate del tedioso cruce manual de lógicas. Somos la intersección entre la precisión matemática y la realidad operativa.</p>
+            
+            <p>Transforma el riesgo en certeza estratégica, potenciando la herramienta que ya dominas: Excel.</p>
+            
+            <div class="contact-email">
+                <a href="mailto:luxanalitica@gmail.com">
+                    <i class="fas fa-envelope"></i> luxanalitica@gmail.com
+                </a>
+                <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                    Envíanos tus sugerencias, desarrollos o mejoras que quieras que incorporemos
+                </p>
+            </div>
+        </div>
+        <div class="contact-footer">
+            <i class="fas fa-heart" style="color: #e91e63;"></i> Herramienta creada con pasión por la analítica
         </div>
     </div>
 
@@ -2416,6 +2607,11 @@
         const constructionOverlay = document.getElementById('constructionOverlay');
         const closeConstructionBtn = document.getElementById('closeConstructionBtn');
         
+        // NUEVOS ELEMENTOS PARA EL PANEL DE CONTACTO
+        const contactFloatingBtn = document.getElementById('contactFloatingBtn');
+        const contactPanel = document.getElementById('contactPanel');
+        const closeContactBtn = document.getElementById('closeContactBtn');
+        
         // FUNCIÓN: Inicializar las nuevas funcionalidades
         function initializeEnhancements() {
             // 1. Mostrar modal de seguridad al cargar la página
@@ -2471,7 +2667,27 @@
                 activateSection('centro-datos');
             });
             
-            // 6. Por defecto, activar el Centro de Datos
+            // 6. Configurar panel de contacto
+            contactFloatingBtn.addEventListener('click', function() {
+                contactPanel.classList.toggle('expanded');
+                this.innerHTML = contactPanel.classList.contains('expanded') ? 
+                    '<i class="fas fa-times"></i>' : '<i class="fas fa-comment-alt"></i>';
+            });
+            
+            closeContactBtn.addEventListener('click', function() {
+                contactPanel.classList.remove('expanded');
+                contactFloatingBtn.innerHTML = '<i class="fas fa-comment-alt"></i>';
+            });
+            
+            // Cerrar panel de contacto al hacer clic fuera de él
+            document.addEventListener('click', function(event) {
+                if (!contactPanel.contains(event.target) && !contactFloatingBtn.contains(event.target)) {
+                    contactPanel.classList.remove('expanded');
+                    contactFloatingBtn.innerHTML = '<i class="fas fa-comment-alt"></i>';
+                }
+            });
+            
+            // 7. Por defecto, activar el Centro de Datos
             setTimeout(() => {
                 if (termsAccepted) {
                     activateSection('centro-datos');
