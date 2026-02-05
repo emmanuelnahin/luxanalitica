@@ -2113,6 +2113,12 @@
                 <h2 style="color: #0d47a1; margin-bottom: 25px; font-size: 1.8rem;">
                     <i class="fas fa-database"></i> Centro de Datos: Cargar Archivo de Población
                 </h2>
+                
+                <!-- NUEVO: Botón para descargar plantilla Excel -->
+                <div id="templateDownloadContainer" style="margin: 20px 0; text-align: center;">
+                    <!-- El botón se agregará automáticamente aquí -->
+                </div>
+                
                 <p style="color: #546e7a; max-width: 800px; margin: 0 auto 25px; font-size: 1.1rem;">
                     Esta es la base de todo. Comienza subiendo tu archivo Excel para limpieza, validación y preparación de datos.
                 </p>
@@ -2148,8 +2154,8 @@
                             <li><strong>Columna N:</strong> mothername</li>
                             <li><strong>Columna O:</strong> display_name</li>
                             <li><strong>Columna P:</strong> gender</li>
-                            <li><strong>Columna Q:</strong> birthdate</li>
-                            <li><strong>Columna R:</strong> joiningdate</li>
+                            <li><strong>Columna Q:</strong> birthdate (Formato: DD/MM/YYYY)</li>
+                            <li><strong>Columna R:</strong> joiningdate (Formato: DD/MM/YYYY)</li>
                             <li><strong>Columna S:</strong> subdomain</li>
                             <li><strong>Columna T:</strong> position</li>
                             <li><strong>Columna U:</strong> position_name</li>
@@ -2900,10 +2906,471 @@
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
         
+        // ==============================================
+        // NUEVAS FUNCIONALIDADES AGREGADAS
+        // ==============================================
+        
+        // 1. Función para generar plantilla Excel descargable
+        function generateExcelTemplate() {
+            console.log("Generando plantilla Excel...");
+            
+            // Crear datos para la plantilla
+            const templateData = [
+                // Encabezados
+                ['identifier', 'rut', 'nss', 'curp', 'civil_status', 'username', 'area', 'area_name', 
+                 'email', 'personal_email', 'firstname', 'middlename', 'lastname', 'mothername', 
+                 'display_name', 'gender', 'birthdate', 'joiningdate', 'subdomain', 'position', 
+                 'position_name', 'description_position', 'manager_identifier'],
+                
+                // Ejemplo 1
+                ['EMP001', '12345678-9', '12345678901', 'CURP001', 'Soltero/a', 'jperez', 'IT', 'Tecnología', 
+                 'juan.perez@empresa.com', 'juanpersonal@gmail.com', 'Juan', 'Alberto', 'Pérez', 'García', 
+                 'Juan Pérez', 'M', '15/03/1985', '01/06/2015', 'sede-central', 'DEV', 'Desarrollador Senior', 
+                 'Desarrollo backend', 'MGR001'],
+                
+                // Ejemplo 2
+                ['EMP002', '98765432-1', '10987654321', 'CURP002', 'Casado/a', 'mgarcia', 'RRHH', 'Recursos Humanos', 
+                 'maria.garcia@empresa.com', 'mariapersonal@gmail.com', 'María', '', 'García', 'López', 
+                 'María García', 'F', '22/07/1990', '15/11/2018', 'sede-central', 'HRM', 'Gerente de RH', 
+                 'Gestión del talento', 'DIR001'],
+                
+                // Ejemplo 3
+                ['EMP003', '45678912-3', '11223344556', 'CURP003', 'Soltero/a', 'crodriguez', 'IT', 'Tecnología', 
+                 'carlos.rodriguez@empresa.com', 'carlos@gmail.com', 'Carlos', '', 'Rodríguez', 'Martínez', 
+                 'Carlos Rodríguez', 'M', '10/11/1988', '03/02/2017', 'sede-central', 'DEV', 'Desarrollador', 
+                 'Desarrollo frontend', 'MGR001'],
+                
+                // Línea en blanco
+                ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+                
+                // Instrucciones
+                ['INSTRUCCIONES IMPORTANTES:', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+                ['1. MANTENER LOS NOMBRES DE COLUMNA EXACTOS', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+                ['2. FECHAS EN FORMATO: DD/MM/YYYY (ej: 15/03/1985)', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+                ['3. Para calcular edad en Excel, usar fórmula: =INT((HOY()-Q2)/365,25)', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+                ['4. Para calcular antigüedad: =INT((HOY()-R2)/365,25)', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+                ['5. manager_identifier debe existir en la columna A', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+            ];
+            
+            try {
+                // Crear workbook
+                const workbook = XLSX.utils.book_new();
+                const worksheet = XLSX.utils.aoa_to_sheet(templateData);
+                
+                // Aplicar anchos de columna aproximados
+                const colWidths = [
+                    {wch: 12}, {wch: 15}, {wch: 15}, {wch: 20}, {wch: 12},
+                    {wch: 10}, {wch: 8}, {wch: 20}, {wch: 25}, {wch: 25},
+                    {wch: 12}, {wch: 12}, {wch: 12}, {wch: 12}, {wch: 20},
+                    {wch: 8}, {wch: 12}, {wch: 12}, {wch: 15}, {wch: 10},
+                    {wch: 20}, {wch: 25}, {wch: 15}
+                ];
+                worksheet['!cols'] = colWidths;
+                
+                // Aplicar formato de fecha a las columnas Q y R (birthdate y joiningdate)
+                const range = XLSX.utils.decode_range(worksheet['!ref']);
+                for (let R = 1; R <= 3; R++) { // Solo para las filas de ejemplo
+                    const birthdateCell = XLSX.utils.encode_cell({r: R, c: 16}); // Q
+                    const joiningCell = XLSX.utils.encode_cell({r: R, c: 17});   // R
+                    
+                    if (worksheet[birthdateCell]) {
+                        worksheet[birthdateCell].z = 'dd/mm/yyyy';
+                        worksheet[birthdateCell].t = 'd'; // Tipo fecha
+                    }
+                    if (worksheet[joiningCell]) {
+                        worksheet[joiningCell].z = 'dd/mm/yyyy';
+                        worksheet[joiningCell].t = 'd';
+                    }
+                }
+                
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Plantilla');
+                
+                // Crear hoja adicional con fórmulas de ejemplo
+                const formulaData = [
+                    ['COLUMNAS ADICIONALES RECOMENDADAS (opcionales)'],
+                    ['edad_calculada', 'antiguedad_anios', 'antiguedad_meses'],
+                    ['=INT((HOY()-Q2)/365.25)', '=INT((HOY()-R2)/365.25)', '=((HOY()-R2)/30.44)'],
+                    ['=INT((HOY()-Q3)/365.25)', '=INT((HOY()-R3)/365.25)', '=((HOY()-R3)/30.44)'],
+                    ['=INT((HOY()-Q4)/365.25)', '=INT((HOY()-R4)/365.25)', '=((HOY()-R4)/30.44)']
+                ];
+                
+                const formulaSheet = XLSX.utils.aoa_to_sheet(formulaData);
+                XLSX.utils.book_append_sheet(workbook, formulaSheet, 'Fórmulas');
+                
+                // Guardar archivo
+                XLSX.writeFile(workbook, 'Plantilla_Poblacion_Luxanalitica.xlsx');
+                
+                console.log("Plantilla generada exitosamente");
+                return true;
+            } catch (error) {
+                console.error("Error generando plantilla:", error);
+                alert("Error al generar la plantilla: " + error.message);
+                return false;
+            }
+        }
+        
+        // 2. Función para agregar el botón de descarga de plantilla
+        function addTemplateDownloadButton() {
+            // Verificar si ya existe el botón
+            if (document.getElementById('downloadTemplateBtn')) {
+                return;
+            }
+            
+            // Crear contenedor para el botón
+            const buttonContainer = document.createElement('div');
+            buttonContainer.id = 'templateDownloadContainer';
+            buttonContainer.style.margin = '20px 0';
+            buttonContainer.style.textAlign = 'center';
+            
+            // Crear botón
+            const downloadBtn = document.createElement('button');
+            downloadBtn.id = 'downloadTemplateBtn';
+            downloadBtn.className = 'btn btn-success';
+            downloadBtn.innerHTML = '<i class="fas fa-file-download"></i> Descargar Plantilla Excel de Ejemplo';
+            downloadBtn.style.padding = '12px 24px';
+            downloadBtn.style.fontSize = '1rem';
+            downloadBtn.style.margin = '10px';
+            
+            // Crear texto informativo
+            const infoText = document.createElement('p');
+            infoText.innerHTML = `
+                <i class="fas fa-info-circle"></i> 
+                <strong>Formato requerido:</strong> Fechas en <code>DD/MM/YYYY</code> (ej: 15/03/1985)<br>
+                <small>La plantilla incluye estructura correcta y fórmulas para calcular edad automáticamente</small>
+            `;
+            infoText.style.fontSize = '0.9rem';
+            infoText.style.color = '#666';
+            infoText.style.marginTop = '10px';
+            infoText.style.padding = '10px';
+            infoText.style.backgroundColor = '#f8f9fa';
+            infoText.style.borderRadius = '5px';
+            infoText.style.borderLeft = '4px solid #28a745';
+            
+            // Agregar evento al botón
+            downloadBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando plantilla...';
+                downloadBtn.disabled = true;
+                
+                setTimeout(() => {
+                    const success = generateExcelTemplate();
+                    downloadBtn.innerHTML = '<i class="fas fa-file-download"></i> Descargar Plantilla Excel de Ejemplo';
+                    downloadBtn.disabled = false;
+                    
+                    if (success) {
+                        // Mostrar mensaje de éxito
+                        const successMsg = document.createElement('div');
+                        successMsg.innerHTML = `
+                            <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-top: 10px; border-left: 4px solid #28a745;">
+                                <i class="fas fa-check-circle"></i> 
+                                <strong>Plantilla descargada.</strong> 
+                                Usa el formato <code>DD/MM/YYYY</code> para las fechas.
+                            </div>
+                        `;
+                        infoText.parentNode.insertBefore(successMsg, infoText.nextSibling);
+                        
+                        // Eliminar mensaje después de 5 segundos
+                        setTimeout(() => {
+                            if (successMsg.parentNode) {
+                                successMsg.parentNode.removeChild(successMsg);
+                            }
+                        }, 5000);
+                    }
+                }, 500);
+            });
+            
+            // Agregar elementos al contenedor
+            buttonContainer.appendChild(downloadBtn);
+            buttonContainer.appendChild(infoText);
+            
+            // Insertar después del título de upload-section
+            const uploadSection = document.getElementById('uploadSection');
+            const uploadTitle = uploadSection.querySelector('h2');
+            
+            if (uploadTitle && uploadTitle.parentNode) {
+                uploadTitle.parentNode.insertBefore(buttonContainer, uploadTitle.nextSibling.nextSibling);
+            }
+            
+            console.log("Botón de plantilla agregado exitosamente");
+        }
+        
+        // 3. Función MEJORADA para parsear fechas (REEMPLAZO SEGURO)
+        function parseDate(dateValue) {
+            // 1. Si está vacío, retornar null
+            if (!dateValue && dateValue !== 0) return null;
+            
+            // 2. Si ya es un objeto Date válido, retornarlo
+            if (dateValue instanceof Date) {
+                return isNaN(dateValue.getTime()) ? null : dateValue;
+            }
+            
+            // 3. Si es número, puede ser fecha Excel (serial)
+            if (typeof dateValue === 'number') {
+                // Números muy pequeños o muy grandes probablemente no son fechas Excel
+                if (dateValue < 1 || dateValue > 100000) {
+                    return null;
+                }
+                
+                // Excel Windows: 1 = 01/01/1900, pero tiene el bug del año bisiesto 1900
+                // Excel Mac: 1 = 01/01/1904
+                // Intentar con Windows primero (más común)
+                const excelEpoch = new Date(1899, 11, 30); // 30/12/1899
+                
+                // Ajustar por el bug de Excel (considera 1900 como bisiesto)
+                const adjustedValue = dateValue > 60 ? dateValue - 1 : dateValue;
+                
+                const result = new Date(excelEpoch.getTime() + adjustedValue * 24 * 60 * 60 * 1000);
+                
+                // Validar que sea una fecha razonable (entre 1900 y 2100)
+                const year = result.getFullYear();
+                if (year >= 1900 && year <= 2100 && !isNaN(result.getTime())) {
+                    return result;
+                }
+                
+                // Si no funcionó con Windows, intentar con Mac (1904)
+                const excelEpochMac = new Date(1904, 0, 1);
+                const resultMac = new Date(excelEpochMac.getTime() + dateValue * 24 * 60 * 60 * 1000);
+                
+                const yearMac = resultMac.getFullYear();
+                if (yearMac >= 1900 && yearMac <= 2100 && !isNaN(resultMac.getTime())) {
+                    return resultMac;
+                }
+                
+                return null;
+            }
+            
+            // 4. Convertir a string
+            const strValue = String(dateValue).trim();
+            if (!strValue) return null;
+            
+            // 5. Intentar formato DD/MM/YYYY o DD-MM-YYYY (RECOMENDADO)
+            const ddMMyyyyMatch = strValue.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/);
+            if (ddMMyyyyMatch) {
+                const day = parseInt(ddMMyyyyMatch[1], 10);
+                const month = parseInt(ddMMyyyyMatch[2], 10) - 1; // Meses en JS: 0-11
+                const year = parseInt(ddMMyyyyMatch[3], 10);
+                
+                // Validación básica
+                if (month >= 0 && month <= 11 && day >= 1 && day <= 31 && year >= 1900 && year <= 2100) {
+                    const date = new Date(year, month, day);
+                    
+                    // Verificar que la fecha no se haya ajustado (ej: 31/02 -> 03/03)
+                    if (date.getDate() === day && date.getMonth() === month && date.getFullYear() === year) {
+                        return date;
+                    }
+                }
+            }
+            
+            // 6. Intentar formato YYYY-MM-DD (ISO)
+            const isoMatch = strValue.match(/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/);
+            if (isoMatch) {
+                const year = parseInt(isoMatch[1], 10);
+                const month = parseInt(isoMatch[2], 10) - 1;
+                const day = parseInt(isoMatch[3], 10);
+                
+                if (month >= 0 && month <= 11 && day >= 1 && day <= 31 && year >= 1900 && year <= 2100) {
+                    const date = new Date(year, month, day);
+                    if (date.getDate() === day && date.getMonth() === month && date.getFullYear() === year) {
+                        return date;
+                    }
+                }
+            }
+            
+            // 7. Último intento: constructor Date nativo (mantener compatibilidad)
+            const parsed = new Date(strValue);
+            if (!isNaN(parsed.getTime())) {
+                const year = parsed.getFullYear();
+                // Validar que sea una fecha razonable
+                if (year >= 1900 && year <= 2100) {
+                    return parsed;
+                }
+            }
+            
+            // 8. Si nada funciona, retornar null
+            console.warn(`No se pudo parsear fecha: "${strValue}"`);
+            return null;
+        }
+        
+        // 4. Función para calcular edad a partir de fecha de nacimiento
+        function calculateAge(birthDate) {
+            if (!birthDate || !(birthDate instanceof Date) || isNaN(birthDate.getTime())) {
+                return null;
+            }
+            
+            const today = new Date();
+            
+            // Verificar que no sea fecha futura
+            if (birthDate > today) {
+                return { years: -1, error: 'Fecha futura', isValid: false };
+            }
+            
+            // Calcular edad precisa
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            const dayDiff = today.getDate() - birthDate.getDate();
+            
+            // Ajustar si aún no ha cumplido años este año
+            if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+                age--;
+            }
+            
+            // Calcular meses adicionales
+            let months = monthDiff;
+            if (dayDiff < 0) {
+                months--;
+            }
+            if (months < 0) {
+                months += 12;
+            }
+            
+            // Validar rango razonable (14-80 años para empleados)
+            const isValid = age >= 14 && age <= 80;
+            
+            return {
+                years: age,
+                months: months,
+                exact: age + (months / 12),
+                isValid: isValid,
+                display: `${age} años${months > 0 ? ` y ${months} meses` : ''}`
+            };
+        }
+        
+        // 5. Función para calcular antigüedad a partir de fecha de ingreso
+        function calculateTenure(joinDate) {
+            if (!joinDate || !(joinDate instanceof Date) || isNaN(joinDate.getTime())) {
+                return null;
+            }
+            
+            const today = new Date();
+            
+            // Si fecha de ingreso es futura
+            if (joinDate > today) {
+                return { 
+                    years: 0, 
+                    months: 0, 
+                    isFuture: true, 
+                    display: 'Fecha futura',
+                    isValid: false 
+                };
+            }
+            
+            // Calcular antigüedad precisa
+            let years = today.getFullYear() - joinDate.getFullYear();
+            let months = today.getMonth() - joinDate.getMonth();
+            let days = today.getDate() - joinDate.getDate();
+            
+            // Ajustar días negativos
+            if (days < 0) {
+                months--;
+                // Obtener días del mes anterior
+                const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                days += lastMonth.getDate();
+            }
+            
+            // Ajustar meses negativos
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+            
+            const totalMonths = years * 12 + months;
+            const exactYears = totalMonths / 12;
+            
+            return {
+                years: years,
+                months: months,
+                days: days,
+                totalMonths: totalMonths,
+                exactYears: exactYears,
+                isFuture: false,
+                isValid: true,
+                display: years === 0 ? 
+                    (months === 0 ? `${days} días` : `${months} meses`) :
+                    `${years} años${months > 0 ? ` y ${months} meses` : ''}`
+            };
+        }
+        
+        // 6. Función para detectar problemas comunes en fechas
+        function validateEmployeeDates(employee) {
+            const issues = [];
+            
+            if (employee.birthdate instanceof Date && !isNaN(employee.birthdate.getTime())) {
+                const age = calculateAge(employee.birthdate);
+                
+                if (age && !age.isValid) {
+                    if (age.years === -1) {
+                        issues.push({
+                            type: 'ERROR',
+                            field: 'birthdate',
+                            message: 'Fecha de nacimiento futura',
+                            value: employee.birthdate.toLocaleDateString('es-ES')
+                        });
+                    } else if (age.years < 14) {
+                        issues.push({
+                            type: 'CRÍTICO',
+                            field: 'birthdate',
+                            message: 'Empleado menor de 14 años',
+                            value: `${age.years} años`
+                        });
+                    } else if (age.years > 80) {
+                        issues.push({
+                            type: 'ADVERTENCIA',
+                            field: 'birthdate',
+                            message: 'Edad improbable (>80 años)',
+                            value: `${age.years} años`
+                        });
+                    }
+                }
+                
+                // Almacenar edad calculada en el empleado
+                if (age && age.isValid) {
+                    employee.calculatedAge = age;
+                }
+            }
+            
+            if (employee.joiningdate instanceof Date && !isNaN(employee.joiningdate.getTime())) {
+                const tenure = calculateTenure(employee.joiningdate);
+                
+                if (tenure) {
+                    // Almacenar antigüedad calculada
+                    employee.calculatedTenure = tenure;
+                    
+                    if (tenure.isFuture) {
+                        issues.push({
+                            type: 'ADVERTENCIA',
+                            field: 'joiningdate',
+                            message: 'Fecha de ingreso futura',
+                            value: employee.joiningdate.toLocaleDateString('es-ES')
+                        });
+                    }
+                    
+                    // Validar que fecha de ingreso no sea anterior a fecha de nacimiento + 14 años
+                    if (employee.birthdate instanceof Date && !isNaN(employee.birthdate.getTime())) {
+                        const minJoinDate = new Date(employee.birthdate);
+                        minJoinDate.setFullYear(minJoinDate.getFullYear() + 14);
+                        
+                        if (employee.joiningdate < minJoinDate) {
+                            issues.push({
+                                type: 'CRÍTICO',
+                                field: 'joiningdate',
+                                message: 'Fecha de ingreso anterior a edad laboral mínima (14 años)',
+                                value: employee.joiningdate.toLocaleDateString('es-ES')
+                            });
+                        }
+                    }
+                }
+            }
+            
+            return issues;
+        }
+        
         // Inicializar
         document.addEventListener('DOMContentLoaded', function() {
             // Inicializar mejoras primero
             initializeEnhancements();
+            
+            // Agregar botón de descarga de plantilla
+            addTemplateDownloadButton();
             
             // Luego el código original
             updateCurrentDateTime();
@@ -3657,35 +4124,7 @@
             return String(row[index]).trim();
         }
         
-        // Parsear fecha - MEJORADO
-        function parseDate(dateValue) {
-            if (!dateValue) return null;
-            
-            if (dateValue instanceof Date) return dateValue;
-            
-            if (typeof dateValue === 'number') {
-                const excelEpoch = new Date(1899, 11, 30);
-                return new Date(excelEpoch.getTime() + dateValue * 24 * 60 * 60 * 1000);
-            }
-            
-            // Intentar diferentes formatos de fecha
-            const parsed = new Date(dateValue);
-            if (!isNaN(parsed.getTime())) return parsed;
-            
-            // Intentar formato dd/mm/yyyy
-            const parts = String(dateValue).split(/[/\-.]/);
-            if (parts.length === 3) {
-                const day = parseInt(parts[0], 10);
-                const month = parseInt(parts[1], 10) - 1;
-                const year = parseInt(parts[2], 10);
-                const altParsed = new Date(year, month, day);
-                if (!isNaN(altParsed.getTime())) return altParsed;
-            }
-            
-            return null;
-        }
-        
-        // Validar empleado y detectar inconsistencias
+        // Validar empleado y detectar inconsistencias - MODIFICADA PARA INCLUIR VALIDACIÓN DE FECHAS
         function validateEmployee(employee, rowNumber) {
             if (!employee.identifier) {
                 inconsistencies.push({
@@ -3764,6 +4203,22 @@
                         suggestions: getFieldSuggestions(field, employee)
                     });
                 }
+            });
+            
+            // NUEVO: Validar fechas y calcular edad/antigüedad
+            const dateIssues = validateEmployeeDates(employee);
+            dateIssues.forEach(issue => {
+                inconsistencies.push({
+                    type: issue.type,
+                    row: rowNumber,
+                    identifier: employee.identifier,
+                    name: employee.display_name || `${employee.firstname} ${employee.lastname}`,
+                    area: employee.area_name || 'N/A',
+                    detail: issue.message,
+                    field: issue.field,
+                    value: issue.value,
+                    suggestions: []
+                });
             });
         }
         
@@ -3877,7 +4332,7 @@
             });
         }
         
-        // Realizar análisis completo
+        // Realizar análisis completo - MODIFICADA PARA INCLUIR ESTADÍSTICAS DE EDAD
         function performAnalysis() {
             if (config.detectConflict) {
                 detectHierarchyCycles();
@@ -3890,7 +4345,7 @@
             downloadSection.style.display = 'block';
         }
         
-        // Calcular estadísticas - MEJORADO con cálculo correcto de edad
+        // Calcular estadísticas - MODIFICADA PARA INCLUIR CÁLCULO DE EDAD
         function calculateStatistics() {
             stats = {
                 totalEmployees: employees.length,
@@ -3901,8 +4356,8 @@
                 managerSubordinates: {},
                 tenureGroups: { '<1 año': 0, '1-3 años': 0, '3-5 años': 0, '5-10 años': 0, '10+ años': 0 },
                 inconsistencies: inconsistencies.length,
-                duplicates: duplicates.length, // NUEVA ESTADÍSTICA
-                duplicatesByType: { 'CRÍTICO': 0, 'IMPORTANTE': 0 }, // NUEVA ESTADÍSTICA
+                duplicates: duplicates.length,
+                duplicatesByType: { 'CRÍTICO': 0, 'IMPORTANTE': 0 },
                 evaluationLoad: {},
                 coverageStats: {
                     withAscendente: 0,
@@ -3916,9 +4371,46 @@
                     minEvaluations: Infinity,
                     avgEvaluations: 0,
                     totalEvaluations: 0,
-                    evaluationDistribution: {} // Para distribución de carga
-                }
+                    evaluationDistribution: {}
+                },
+                // NUEVAS ESTADÍSTICAS DE EDAD
+                ageStats: {
+                    totalCalculated: 0,
+                    averageAge: 0,
+                    minAge: Infinity,
+                    maxAge: 0,
+                    ageDistribution: {
+                        '18-25': 0,
+                        '26-35': 0,
+                        '36-45': 0,
+                        '46-55': 0,
+                        '56-65': 0,
+                        '66+': 0
+                    },
+                    invalidDates: 0
+                },
+                // NUEVAS ESTADÍSTICAS DE ANTIGÜEDAD
+                tenureStats: {
+                    totalCalculated: 0,
+                    averageTenure: 0,
+                    minTenure: Infinity,
+                    maxTenure: 0,
+                    tenureDistribution: {
+                        '<1 año': 0,
+                        '1-3 años': 0,
+                        '3-5 años': 0,
+                        '5-10 años': 0,
+                        '10-15 años': 0,
+                        '15+ años': 0
+                    },
+                    futureDates: 0
+                },
+                dateIssues: []
             };
+            
+            // Variables temporales para cálculos
+            let totalAge = 0;
+            let totalTenure = 0;
             
             employees.forEach(emp => {
                 if (emp.gender) {
@@ -3947,19 +4439,53 @@
                 }
                 stats.areaDistribution[area]++;
                 
-                // Cálculo correcto de antigüedad (tenure) - MEJORADO
-                if (emp.joiningdate instanceof Date && !isNaN(emp.joiningdate.getTime())) {
-                    const today = new Date();
-                    const tenureYears = (today - emp.joiningdate) / (1000 * 60 * 60 * 24 * 365.25);
+                // Cálculo de antigüedad (tenure) usando la nueva función
+                if (emp.calculatedTenure && emp.calculatedTenure.isValid && !emp.calculatedTenure.isFuture) {
+                    const tenureYears = emp.calculatedTenure.exactYears;
+                    totalTenure += tenureYears;
+                    stats.tenureStats.totalCalculated++;
                     
+                    // Actualizar min/max
+                    if (tenureYears < stats.tenureStats.minTenure) stats.tenureStats.minTenure = tenureYears;
+                    if (tenureYears > stats.tenureStats.maxTenure) stats.tenureStats.maxTenure = tenureYears;
+                    
+                    // Distribución por rangos de antigüedad
+                    if (tenureYears < 1) stats.tenureStats.tenureDistribution['<1 año']++;
+                    else if (tenureYears <= 3) stats.tenureStats.tenureDistribution['1-3 años']++;
+                    else if (tenureYears <= 5) stats.tenureStats.tenureDistribution['3-5 años']++;
+                    else if (tenureYears <= 10) stats.tenureStats.tenureDistribution['5-10 años']++;
+                    else if (tenureYears <= 15) stats.tenureStats.tenureDistribution['10-15 años']++;
+                    else stats.tenureStats.tenureDistribution['15+ años']++;
+                    
+                    // Para compatibilidad con gráfico existente
                     if (tenureYears < 1) stats.tenureGroups['<1 año']++;
                     else if (tenureYears <= 3) stats.tenureGroups['1-3 años']++;
                     else if (tenureYears <= 5) stats.tenureGroups['3-5 años']++;
                     else if (tenureYears <= 10) stats.tenureGroups['5-10 años']++;
                     else stats.tenureGroups['10+ años']++;
-                } else {
-                    // Si no hay fecha de ingreso, contar como "<1 año"
-                    stats.tenureGroups['<1 año']++;
+                } else if (emp.calculatedTenure && emp.calculatedTenure.isFuture) {
+                    stats.tenureStats.futureDates++;
+                }
+                
+                // Cálculo de edad usando la nueva función
+                if (emp.calculatedAge && emp.calculatedAge.isValid) {
+                    const age = emp.calculatedAge.years;
+                    totalAge += age;
+                    stats.ageStats.totalCalculated++;
+                    
+                    // Actualizar min/max
+                    if (age < stats.ageStats.minAge) stats.ageStats.minAge = age;
+                    if (age > stats.ageStats.maxAge) stats.ageStats.maxAge = age;
+                    
+                    // Distribución por rangos de edad
+                    if (age >= 18 && age <= 25) stats.ageStats.ageDistribution['18-25']++;
+                    else if (age <= 35) stats.ageStats.ageDistribution['26-35']++;
+                    else if (age <= 45) stats.ageStats.ageDistribution['36-45']++;
+                    else if (age <= 55) stats.ageStats.ageDistribution['46-55']++;
+                    else if (age <= 65) stats.ageStats.ageDistribution['56-65']++;
+                    else stats.ageStats.ageDistribution['66+']++;
+                } else if (emp.birthdate) {
+                    stats.ageStats.invalidDates++;
                 }
             });
             
@@ -3969,7 +4495,7 @@
             });
             
             calculateEvaluationLoad();
-            calculateEvaluationStats(); // Nueva función para estadísticas de evaluación
+            calculateEvaluationStats();
             
             const managersWithSubordinates = Object.keys(stats.managerSubordinates).length;
             stats.avgSubordinates = managersWithSubordinates > 0 ? 
@@ -3982,6 +4508,17 @@
                 Math.min(...Object.values(stats.managerSubordinates)) : 0;
             
             calculateCoverageStats();
+            
+            // Calcular promedios de edad y antigüedad
+            if (stats.ageStats.totalCalculated > 0) {
+                stats.ageStats.averageAge = totalAge / stats.ageStats.totalCalculated;
+            }
+            if (stats.ageStats.minAge === Infinity) stats.ageStats.minAge = 0;
+            
+            if (stats.tenureStats.totalCalculated > 0) {
+                stats.tenureStats.averageTenure = totalTenure / stats.tenureStats.totalCalculated;
+            }
+            if (stats.tenureStats.minTenure === Infinity) stats.tenureStats.minTenure = 0;
             
             stats.topManagers = Object.entries(stats.managerSubordinates)
                 .map(([id, count]) => {
@@ -4032,7 +4569,6 @@
             stats.evaluationStats.evaluationDistribution['11+'] = 0;
             
             // Calcular evaluaciones que cada persona DEBE HACER (como evaluador)
-            // Esto incluye: evaluar a sus subordinados + evaluar a sus pares (depende de configuración)
             employees.forEach(emp => {
                 let evaluationsToDo = 0;
                 
@@ -4144,7 +4680,7 @@
             });
         }
         
-        // Calcular porcentajes
+        // Calcular porcentajes - MODIFICADA PARA INCLUIR ESTADÍSTICAS DE EDAD
         function calculatePercentages() {
             const genderMPercentage = stats.totalEmployees > 0 ? 
                 Math.round((stats.genderCount.M / stats.totalEmployees) * 1000) / 10 : 0;
@@ -4170,6 +4706,14 @@
             const duplicatesPercentage = stats.totalEmployees > 0 ? 
                 Math.round((stats.duplicates / stats.totalEmployees) * 1000) / 10 : 0;
             
+            // NUEVO: Porcentaje de edades calculadas
+            const ageCalculatedPercentage = stats.totalEmployees > 0 ? 
+                Math.round((stats.ageStats.totalCalculated / stats.totalEmployees) * 1000) / 10 : 0;
+            
+            // NUEVO: Porcentaje de antigüedades calculadas
+            const tenureCalculatedPercentage = stats.totalEmployees > 0 ? 
+                Math.round((stats.tenureStats.totalCalculated / stats.totalEmployees) * 1000) / 10 : 0;
+            
             return {
                 genderMPercentage,
                 genderFPercentage,
@@ -4178,22 +4722,24 @@
                 coveragePercentage,
                 overloadPercentage,
                 inconsistenciesPercentage,
-                duplicatesPercentage
+                duplicatesPercentage,
+                ageCalculatedPercentage,
+                tenureCalculatedPercentage
             };
         }
         
-        // Actualizar UI
+        // Actualizar UI - MODIFICADA PARA INCLUIR NUEVAS TARJETAS
         function updateUI() {
             inconsistenciesCount.textContent = stats.inconsistencias;
-            duplicatesCount.textContent = stats.duplicates; // NUEVO
+            duplicatesCount.textContent = stats.duplicates;
             downloadInconsistenciesBtn.disabled = stats.inconsistencias === 0;
             quickFixBtn.disabled = stats.inconsistencias === 0;
-            downloadAllDuplicatesBtn.disabled = stats.duplicates === 0; // NUEVO
+            downloadAllDuplicatesBtn.disabled = stats.duplicates === 0;
             
             updateInconsistenciesTable();
-            updateDuplicatesTable(); // NUEVO
+            updateDuplicatesTable();
             updateManagersTable();
-            updateStatsCards();
+            updateStatsCards(); // Esta función ha sido modificada para incluir nuevas tarjetas
             
             downloadAscBtn.disabled = false;
             downloadPairsBtn.disabled = false;
@@ -4284,13 +4830,14 @@
             });
         }
         
-        // Actualizar tarjetas de estadísticas - MEJORADA con duplicados
+        // Actualizar tarjetas de estadísticas - MEJORADA CON NUEVAS TARJETAS
         function updateStatsCards() {
             const percentages = calculatePercentages();
             const coveragePercentage = stats.coverageStats.fullyCovered > 0 ? 
                 Math.round(stats.coverageStats.fullyCovered / stats.totalEmployees * 100) : 0;
             
-            statsGrid.innerHTML = `
+            // Tarjetas originales mantenidas
+            let statsHTML = `
                 <div class="stat-card">
                     <div class="stat-title"><i class="fas fa-users"></i> Total Empleados</div>
                     <div class="stat-value">${stats.totalEmployees}</div>
@@ -4382,6 +4929,72 @@
                     <div class="stat-desc">Problemas que requieren atención</div>
                 </div>
             `;
+            
+            // NUEVAS TARJETAS: Edad y Antigüedad
+            // Tarjeta: Edad Promedio
+            let ageStatus = 'success';
+            if (stats.ageStats.averageAge > 50) ageStatus = 'warning';
+            if (stats.ageStats.averageAge > 60) ageStatus = 'danger';
+            
+            statsHTML += `
+                <div class="stat-card ${ageStatus}">
+                    <div class="stat-title"><i class="fas fa-birthday-cake"></i> Edad Promedio</div>
+                    <div class="stat-value ${ageStatus}">${stats.ageStats.averageAge.toFixed(1)} años</div>
+                    <div class="stat-desc">
+                        Rango: ${stats.ageStats.minAge} - ${stats.ageStats.maxAge} años<br>
+                        ${stats.ageStats.totalCalculated} de ${stats.totalEmployees} calculados
+                        ${stats.ageStats.invalidDates > 0 ? 
+                            `<br><span style="color: #f57c00;"><i class="fas fa-exclamation-triangle"></i> 
+                            ${stats.ageStats.invalidDates} fechas inválidas</span>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            // Tarjeta: Antigüedad Promedio
+            let tenureStatus = 'success';
+            if (stats.tenureStats.averageTenure > 10) tenureStatus = 'warning';
+            if (stats.tenureStats.averageTenure > 15) tenureStatus = 'danger';
+            
+            statsHTML += `
+                <div class="stat-card ${tenureStatus}">
+                    <div class="stat-title"><i class="fas fa-history"></i> Antigüedad Promedio</div>
+                    <div class="stat-value ${tenureStatus}">${stats.tenureStats.averageTenure.toFixed(1)} años</div>
+                    <div class="stat-desc">
+                        Rango: ${stats.tenureStats.minTenure.toFixed(1)} - ${stats.tenureStats.maxTenure.toFixed(1)} años<br>
+                        ${stats.tenureStats.totalCalculated} empleados con antigüedad válida
+                        ${stats.tenureStats.futureDates > 0 ? 
+                            `<br><span style="color: #f57c00;"><i class="fas fa-calendar-plus"></i> 
+                            ${stats.tenureStats.futureDates} fechas futuras</span>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            // Tarjeta: Distribución por Edad
+            let ageDistributionHTML = '';
+            Object.entries(stats.ageStats.ageDistribution).forEach(([range, count]) => {
+                if (stats.ageStats.totalCalculated > 0) {
+                    const percentage = Math.round((count / stats.ageStats.totalCalculated) * 100);
+                    ageDistributionHTML += `
+                        <div class="gender-display">
+                            <span>${range}: ${count}</span>
+                            <span class="percentage-badge">${percentage}%</span>
+                        </div>
+                        <div class="gender-bar" style="width: ${percentage}%"></div>
+                    `;
+                }
+            });
+            
+            statsHTML += `
+                <div class="stat-card">
+                    <div class="stat-title"><i class="fas fa-chart-pie"></i> Distribución por Edad</div>
+                    <div class="stat-value">
+                        ${ageDistributionHTML || '<div style="color: #999; text-align: center;">Sin datos de edad</div>'}
+                    </div>
+                    <div class="stat-desc">${stats.ageStats.totalCalculated} empleados con edad calculada</div>
+                </div>
+            `;
+            
+            statsGrid.innerHTML = statsHTML;
         }
         
         // Crear gráficos MEJORADOS (con gráfico de años en la empresa)
@@ -4881,7 +5494,7 @@
             }
         }
         
-        // FUNCIÓN MEJORADA: Generar relaciones de pares en formato ancho - SEGÚN TUS REQUERIMIENTOS
+        // FUNCIÓN MEJORADA: Generar relaciones de pares en formato ancho
         async function generatePairsOptimized() {
             const pairsMap = {};
             const totalEmployees = employees.length;
@@ -4930,7 +5543,7 @@
                     // No incluir al manager (si el manager está en la lista de compañeros)
                     if (compañero.identifier === emp.manager_identifier) continue;
                     
-                    // INCLUIR TODOS los compañeros sin importar área - SEGÚN TUS REQUERIMIENTOS
+                    // INCLUIR TODOS los compañeros sin importar área
                     paresList.push(compañero.identifier);
                 }
                 
@@ -4974,7 +5587,7 @@
                 if (item.pares.length === 0) {
                     empleadosSinPares++;
                 }
-                if (item.pares.length >= 1) { // Al menos 1 par
+                if (item.pares.length >= 1) {
                     empleadosConParesSuficientes++;
                 }
             });
@@ -5241,7 +5854,7 @@
             }
         }
         
-        // Descargar reporte ejecutivo - MEJORADO con duplicados
+        // Descargar reporte ejecutivo - MEJORADO CON ESTADÍSTICAS DE EDAD
         function downloadReporte() {
             const workbook = XLSX.utils.book_new();
             
@@ -5274,6 +5887,15 @@
                 ['• Duplicados CRÍTICO (identifier)', stats.duplicatesByType?.CRÍTICO || 0],
                 ['• Duplicados IMPORTANTE (rut, email)', stats.duplicatesByType?.IMPORTANTE || 0],
                 [''],
+                ['ESTADÍSTICAS DE EDAD Y ANTIGÜEDAD', ''],
+                ['Edad promedio', `${stats.ageStats.averageAge.toFixed(1)} años`],
+                ['Rango de edad', `${stats.ageStats.minAge} - ${stats.ageStats.maxAge} años`],
+                ['Empleados con edad calculada', `${stats.ageStats.totalCalculated} (${Math.round(stats.ageStats.totalCalculated/stats.totalEmployees*100)}%)`],
+                ['Antigüedad promedio', `${stats.tenureStats.averageTenure.toFixed(1)} años`],
+                ['Rango de antigüedad', `${stats.tenureStats.minTenure.toFixed(1)} - ${stats.tenureStats.maxTenure.toFixed(1)} años`],
+                ['Empleados con antigüedad calculada', `${stats.tenureStats.totalCalculated} (${Math.round(stats.tenureStats.totalCalculated/stats.totalEmployees*100)}%)`],
+                ['Fechas de ingreso futuras', stats.tenureStats.futureDates],
+                [''],
                 ['DISTRIBUCIÓN POR AÑOS EN LA EMPRESA', ''],
                 ['Menos de 1 año', stats.tenureGroups['<1 año']],
                 ['1-3 años', stats.tenureGroups['1-3 años']],
@@ -5285,10 +5907,11 @@
                 ['1. Verificar y corregir las inconsistencias antes de proceder', ''],
                 ['2. Resolver duplicados CRÍTICOS (identifier) antes de continuar', ''],
                 ['3. Revisar duplicados IMPORTANTES (rut, email)', ''],
-                ['4. Pares: Todos los compañeros con el mismo manager (excluyendo al manager)', ''],
-                ['5. Balancear la carga de evaluación entre managers', ''],
-                ['6. Validar que todos los managers existan en el sistema', ''],
-                ['7. Revisar ciclos jerárquicos antes de la evaluación', '']
+                ['4. Validar fechas de nacimiento e ingreso', ''],
+                ['5. Pares: Todos los compañeros con el mismo manager (excluyendo al manager)', ''],
+                ['6. Balancear la carga de evaluación entre managers', ''],
+                ['7. Validar que todos los managers existan en el sistema', ''],
+                ['8. Revisar ciclos jerárquicos antes de la evaluación', '']
             ];
             
             const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
@@ -5350,6 +5973,22 @@
                 XLSX.utils.book_append_sheet(workbook, duplicatesSheet, 'Duplicados');
             }
             
+            // NUEVA HOJA: Distribución por Edad
+            const ageDistributionData = [
+                ['DISTRIBUCIÓN POR EDAD'],
+                ['Rango de Edad', 'Cantidad', 'Porcentaje']
+            ];
+            
+            Object.entries(stats.ageStats.ageDistribution).forEach(([range, count]) => {
+                if (stats.ageStats.totalCalculated > 0) {
+                    const percentage = Math.round((count / stats.ageStats.totalCalculated) * 100);
+                    ageDistributionData.push([range, count, `${percentage}%`]);
+                }
+            });
+            
+            const ageSheet = XLSX.utils.aoa_to_sheet(ageDistributionData);
+            XLSX.utils.book_append_sheet(workbook, ageSheet, 'Distribución Edad');
+            
             const areaData = [
                 ['DISTRIBUCIÓN DE EMPLEADOS POR ÁREA'],
                 ['Área', 'Cantidad', 'Porcentaje', 'Con Manager', 'Cobertura 360°']
@@ -5410,7 +6049,7 @@
             originalData = [];
             employees = [];
             inconsistencies = [];
-            duplicates = []; // NUEVO: Limpiar duplicados
+            duplicates = [];
             stats = {};
             processingTime = 0;
             
@@ -5434,14 +6073,14 @@
             
             // Actualizar UI
             inconsistenciesCount.textContent = '0';
-            duplicatesCount.textContent = '0'; // NUEVO
+            duplicatesCount.textContent = '0';
             downloadInconsistenciesBtn.disabled = true;
             quickFixBtn.disabled = true;
-            downloadAllDuplicatesBtn.disabled = true; // NUEVO
+            downloadAllDuplicatesBtn.disabled = true;
             
             // Limpiar tablas
             inconsistenciesBody.innerHTML = '';
-            duplicatesBody.innerHTML = ''; // NUEVO
+            duplicatesBody.innerHTML = '';
             managersBody.innerHTML = '';
             statsGrid.innerHTML = '';
             
