@@ -2010,6 +2010,15 @@
                 </div>
             </div>
             
+            <!-- MENÚ DE ESTRUCTURA ORGANIZACIONAL MODIFICADO -->
+            <div class="menu-item" onclick="window.open('https://emmanuelnahin.github.io/estructura/', '_blank')" style="cursor: pointer;">
+                <i class="fas fa-sitemap"></i>
+                <div class="menu-item-text">
+                    <h4>🕸️ Estructura Organizacional</h4>
+                    <p>Organigramas interactivos y análisis de tramos de control.</p>
+                </div>
+            </div>
+            
             <div class="menu-item" data-section="analytics">
                 <i class="fas fa-chart-bar"></i>
                 <div class="menu-item-text">
@@ -2023,14 +2032,6 @@
                 <div class="menu-item-text">
                     <h4>🎯 Planificador de KPIs y Bonos <span class="coming-soon-badge">Próximamente</span></h4>
                     <p>Configuración de reglas y simulador de pagos por desempeño.</p>
-                </div>
-            </div>
-            
-            <div class="menu-item" data-section="estructura">
-                <i class="fas fa-sitemap"></i>
-                <div class="menu-item-text">
-                    <h4>🕸️ Estructura Organizacional <span class="coming-soon-badge">Próximamente</span></h4>
-                    <p>Organigramas interactivos y análisis de tramos de control.</p>
                 </div>
             </div>
         </div>
@@ -2658,12 +2659,15 @@
             menuItems.forEach(item => {
                 item.addEventListener('click', function() {
                     const section = this.dataset.section;
-                    activateSection(section);
-                    
-                    // Si no es centro-datos o evaluacion, mostrar construcción
-                    if (section !== 'centro-datos' && section !== 'evaluacion') {
-                        showConstructionMessage(section);
+                    if (section) {
+                        activateSection(section);
+                        
+                        // Si no es centro-datos o evaluacion, mostrar construcción
+                        if (section !== 'centro-datos' && section !== 'evaluacion') {
+                            showConstructionMessage(section);
+                        }
                     }
+                    // Si no tiene data-section (como el de estructura organizacional), no hacer nada
                 });
             });
             
@@ -2718,7 +2722,10 @@
             });
             
             // Activar el item correspondiente
-            document.querySelector(`.menu-item[data-section="${section}"]`).classList.add('active');
+            const menuItem = document.querySelector(`.menu-item[data-section="${section}"]`);
+            if (menuItem) {
+                menuItem.classList.add('active');
+            }
             
             // Actualizar sección actual
             currentSection = section;
@@ -2742,9 +2749,6 @@
                     break;
                 case 'kpis':
                     sectionName = 'Planificador de KPIs y Bonos';
-                    break;
-                case 'estructura':
-                    sectionName = 'Estructura Organizacional';
                     break;
                 default:
                     sectionName = 'Esta sección';
@@ -4886,7 +4890,7 @@
                         <span class="percentage">(${percentages.coveragePercentage}%)</span>
                     </div>
                     <div class="stat-desc">${stats.coverageStats.fullyCovered} empleados con evaluación completa</div>
-                </div>
+</div>
                 
                 <!-- NUEVA ESTADÍSTICA: Duplicados Detectados -->
                 <div class="stat-card ${stats.duplicates > 0 ? 'danger' : 'success'}">
@@ -6093,5 +6097,3 @@
     </script>
 </body>
 </html>
-
-
