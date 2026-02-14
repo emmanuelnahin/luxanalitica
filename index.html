@@ -2027,10 +2027,11 @@
                 </div>
             </div>
             
-            <div class="menu-item" data-section="kpis">
+            <!-- PLANIFICADOR DE KPIS Y BONOS - ACTUALIZADO (YA NO ESTÁ EN CONSTRUCCIÓN) -->
+            <div class="menu-item" onclick="window.open('https://emmanuelnahin.github.io/KPIs/', '_blank')" style="cursor: pointer;">
                 <i class="fas fa-bullseye"></i>
                 <div class="menu-item-text">
-                    <h4>🎯 Planificador de KPIs y Bonos <span class="coming-soon-badge">Próximamente</span></h4>
+                    <h4>🎯 Planificador de KPIs y Bonos</h4>
                     <p>Configuración de reglas y simulador de pagos por desempeño.</p>
                 </div>
             </div>
@@ -2667,7 +2668,7 @@
                             showConstructionMessage(section);
                         }
                     }
-                    // Si no tiene data-section (como el de estructura organizacional), no hacer nada
+                    // Si no tiene data-section (como los de estructura organizacional y KPIs), no hacer nada
                 });
             });
             
@@ -2746,9 +2747,6 @@
             switch(section) {
                 case 'analytics':
                     sectionName = 'Tableros de Analytics';
-                    break;
-                case 'kpis':
-                    sectionName = 'Planificador de KPIs y Bonos';
                     break;
                 default:
                     sectionName = 'Esta sección';
