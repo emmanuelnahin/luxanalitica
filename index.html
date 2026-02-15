@@ -1884,6 +1884,31 @@
             background: #388e3c;
             transform: translateY(-2px);
         }
+
+        /* Nuevo footer de privacidad */
+        .privacy-footer {
+            background-color: #e8f5e9;
+            border-left: 4px solid #2e7d32;
+            padding: 20px;
+            margin: 20px 0 0;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.95rem;
+            color: #1b5e20;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .privacy-footer i {
+            margin-right: 8px;
+            color: #2e7d32;
+        }
+        .privacy-footer a {
+            color: #0d47a1;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .privacy-footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -2019,10 +2044,11 @@
                 </div>
             </div>
             
-            <div class="menu-item" data-section="analytics">
+            <!-- ÍTEM DE TABLEROS DE ANALYTICS ACTUALIZADO: ahora abre el enlace externo y sin badge "Próximamente" -->
+            <div class="menu-item" onclick="window.open('https://emmanuelnahin.github.io/analytics/', '_blank')" style="cursor: pointer;">
                 <i class="fas fa-chart-bar"></i>
                 <div class="menu-item-text">
-                    <h4>📊 Tableros de Analytics <span class="coming-soon-badge">Próximamente</span></h4>
+                    <h4>📊 Tableros de Analytics</h4>
                     <p>Análisis descriptivo: demografía, compensaciones y rotación.</p>
                 </div>
             </div>
@@ -2554,9 +2580,22 @@
             </div>
         </div>
         
+        <!-- Footer original -->
         <div class="footer">
             <p><strong>XLS Luxanalitica - HR Analytics Suite</strong> | Herramienta avanzada para análisis de población y evaluaciones 360°</p>
             <p style="margin-top: 10px;">Desarrollado con HTML, CSS, JavaScript, Chart.js y D3.js | Procesamiento 100% en el navegador</p>
+        </div>
+        
+        <!-- NUEVO FOOTER DE PRIVACIDAD -->
+        <div class="privacy-footer">
+            <p>
+                <i class="fas fa-shield-alt"></i> <strong>Privacidad total:</strong> Todos los datos se procesan <strong>exclusivamente en tu navegador</strong>. 
+                Puedes abrir las herramientas de desarrollador <kbd style="background:#ddd; padding:2px 6px; border-radius:4px;">F12</kbd> y hacer clic en la pestaña 
+                <span style="background:#1565c0; color:white; padding:2px 8px; border-radius:4px;">Network</span> 
+                para comprobar que <strong>no se envía información a ningún servidor</strong>. 
+                Si prefieres usar datos ficticios, haz clic en el botón <span style="background:#6f42c1; color:white; padding:2px 8px; border-radius:4px;">Simular</span> 
+                y obtendrás un conjunto de ejemplo con inconsistencias controladas. ¡Tú decides!
+            </p>
         </div>
     </div>
 
@@ -2656,19 +2695,18 @@
                 this.innerHTML = isExpanded ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
             });
             
-            // 4. Configurar menú items
-            menuItems.forEach(item => {
+            // 4. Configurar menú items (solo los que tienen data-section, los que tienen onclick ya se manejan solos)
+            document.querySelectorAll('.menu-item[data-section]').forEach(item => {
                 item.addEventListener('click', function() {
                     const section = this.dataset.section;
                     if (section) {
                         activateSection(section);
                         
-                        // Si no es centro-datos o evaluacion, mostrar construcción
+                        // Si no es centro-datos o evaluacion, mostrar construcción (por si acaso)
                         if (section !== 'centro-datos' && section !== 'evaluacion') {
                             showConstructionMessage(section);
                         }
                     }
-                    // Si no tiene data-section (como los de estructura organizacional y KPIs), no hacer nada
                 });
             });
             
@@ -2717,8 +2755,8 @@
         
         // FUNCIÓN: Activar una sección
         function activateSection(section) {
-            // Remover active de todos los items del menú
-            menuItems.forEach(item => {
+            // Remover active de todos los items del menú (solo los que tienen data-section)
+            document.querySelectorAll('.menu-item[data-section]').forEach(item => {
                 item.classList.remove('active');
             });
             
@@ -2740,7 +2778,7 @@
             }
         }
         
-        // FUNCIÓN: Mostrar mensaje de construcción
+        // FUNCIÓN: Mostrar mensaje de construcción (por si se usa en algún otro lado)
         function showConstructionMessage(section) {
             // Obtener nombre de la sección
             let sectionName = '';
@@ -4888,7 +4926,7 @@
                         <span class="percentage">(${percentages.coveragePercentage}%)</span>
                     </div>
                     <div class="stat-desc">${stats.coverageStats.fullyCovered} empleados con evaluación completa</div>
-</div>
+                </div>
                 
                 <!-- NUEVA ESTADÍSTICA: Duplicados Detectados -->
                 <div class="stat-card ${stats.duplicates > 0 ? 'danger' : 'success'}">
